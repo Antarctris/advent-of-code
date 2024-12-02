@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [[ ! $# -eq 2 ]]; then
+    echo "Two arguments needed: Year and day."
+    exit 1
+fi
+
+# Set up paths
+BASE_PATH="/home/$USER/Projects/advent-of-code"
+YEAR="$1"
+DAY="$2"
+
+# Check if directory for year exists, otherwise this can't continue
+if [ ! -d "$BASE_PATH/$YEAR" ]; then
+    echo "$BASE_PATH/$YEAR"
+    echo "Directory for year does not exist!"
+    exit 1
+fi
+
+# Check if day exists already or if it needs to be copied from template
+if [ ! -d "$BASE_PATH/$YEAR/$DAY" ]; then
+    if [ ! -d "$BASE_PATH/$YEAR/template" ]; then 
+        echo "Directory for day does not exist and there is no template to create it!"
+        exit 1
+    fi
+    cp -HLr "$BASE_PATH/$YEAR/template" "$BASE_PATH/$YEAR/$DAY"
+    touch "$BASE_PATH/$YEAR/$DAY/input.txt"
+fi
+
+ZELLIJ_SESSION_NAME="advent-of-code.$YEAR.$DAY"
+
+# Delete old, exited session, so zellij doesn't revive it and we get a fresh session
+zellij list-sessions | grep "$ZELLIJ_SESSION_NAME" | grep EXITED; greprc=$?
+if [[ $greprc -eq 0 ]]; then
+    zellij delete-session "$ZELLIJ_SESSION_NAME"
+fi
+
+# Reattach dispatched sessions, since those were probably dispatched on purpose for e.g.
+# unsaved changes. Otherwise create fresh session with layout.
+zellij list-sessions | grep "$ZELLIJ_SESSION_NAME"; greprc=$?
+if [[ $greprc -eq 0 ]]; then
+    zellij attach "$ZELLIJ_SESSION_NAME"
+else
+    (cd "$BASE_PATH/$YEAR/$DAY" && zellij -s "$ZELLIJ_SESSION_NAME" -n ../zellij.kdl)
+fi
