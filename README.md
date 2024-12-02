@@ -1,7 +1,7 @@
 Advent of Code
 ==============
 
-My personal solutions to the Advent of Code puzzles.
+My personal solutions to the [Advent of Code](https://adventofcode.com/) puzzles.
 
 I generally use NeoVim, Zellij and other CLI tools to get things done.
 The bash script named advent-of-code lets me quickly create and jump into zellij sessions
