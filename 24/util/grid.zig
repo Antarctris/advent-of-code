@@ -11,6 +11,14 @@ pub const Point = struct {
         return .{ .x = self.x + other.x, .y = self.y + other.y };
     }
 
+    pub fn tranlateTimes(self: Point, other: Point, times: i64) Point {
+        return .{ .x = self.x + other.x * times, .y = self.y + other.y * times };
+    }
+
+    pub fn inverse(self: Point) Point {
+        return .{ .x = self.x * -1, .y = self.y * -1 };
+    }
+
     // See https://en.wikipedia.org/wiki/Determinant
     // Also useful for https://en.wikipedia.org/wiki/Shoelace_formula#Other_formulas_2
     pub fn determinant(self: Point, other: Point) i64 {
@@ -49,7 +57,7 @@ pub const SE = S.translate(E);
 pub const SW = S.translate(W);
 pub const NW = N.translate(W);
 pub const OrdinalDirections: [4]Point = .{ NE, SE, SW, NW };
-pub const OctagonalDirection: [8]Point = .{ N, NE, E, SE, S, SW, W, NW };
+pub const OctagonalDirections: [8]Point = .{ N, NE, E, SE, S, SW, W, NW };
 
 pub const CharGrid = struct {
     allocator: Allocator,
@@ -102,6 +110,10 @@ pub const CharGrid = struct {
         return y * self.width + x;
     }
 
+    pub fn isInBounds(self: CharGrid, p: Point) bool {
+        return p.x >= 0 and p.y >= 0 and p.x < self.width and p.y < self.height;
+    }
+
     pub fn pointOf(self: CharGrid, needle: []const u8) ?Point {
         var y: u64 = 0;
         while (y < self.height) : (y += 1) {
@@ -117,6 +129,33 @@ pub const CharGrid = struct {
         var y: u64 = 0;
         while (y < self.height) : (y += 1) {
             sum += std.mem.count(u8, self.bytes[y * self.width .. (y + 1) * self.width], needle);
+        }
+        return sum;
+    }
+
+    pub fn countDirections(self: CharGrid, needle: []const u8, directions: []const Point) u64 {
+        var sum: u64 = 0;
+        for (0..self.height) |y| {
+            var index = Point{ .x = 0, .y = @intCast(y) };
+            while (index.x < self.width) : (index = index.translate(E)) {
+                sum += self.countDirectionsAt(index, needle, directions);
+            }
+        }
+        return sum;
+    }
+
+    pub fn countDirectionsAt(self: CharGrid, point: Point, needle: []const u8, directions: []const Point) u64 {
+        var sum: u64 = 0;
+        for (directions) |direction| {
+            if (self.isInBounds(point.tranlateTimes(direction, @intCast(needle.len - 1)))) {
+                var p = point;
+                var i: usize = 0;
+                while (i < needle.len and self.get(p) == needle[i]) {
+                    i += 1;
+                    p = p.translate(direction);
+                }
+                sum += @intFromBool(i == needle.len);
+            }
         }
         return sum;
     }
