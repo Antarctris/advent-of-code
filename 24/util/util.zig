@@ -3,6 +3,17 @@ const std = @import("std");
 pub const grid = @import("grid.zig");
 pub const mem = @import("mem.zig");
 
+pub fn parseNumbersScalar(allocator: std.mem.Allocator, comptime T: type, base: u8, string: []const u8, delimiter: u8) []T {
+    var numbers = std.ArrayList(T).init(allocator);
+    defer numbers.deinit();
+    var iterator = std.mem.tokenizeScalar(u8, string, delimiter);
+    while (iterator.next()) |num_str| {
+        const number = std.fmt.parseInt(T, num_str, base) catch unreachable;
+        numbers.append(number) catch unreachable;
+    }
+    return allocator.dupe(T, numbers.items) catch unreachable;
+}
+
 pub fn parseNumbers(allocator: std.mem.Allocator, comptime T: type, string: []const u8, base: u8) []T {
     var numbers = std.ArrayList(T).init(allocator);
     defer numbers.deinit();
