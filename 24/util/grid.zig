@@ -11,18 +11,38 @@ pub const Point = struct {
         return .{ .x = self.x + other.x, .y = self.y + other.y };
     }
 
-    pub fn tranlateTimes(self: Point, other: Point, times: i64) Point {
-        return .{ .x = self.x + other.x * times, .y = self.y + other.y * times };
+    pub fn times(self: Point, n: i64) Point {
+        return .{ .x = self.x * n, .y = self.y * n };
     }
 
     pub fn inverse(self: Point) Point {
         return .{ .x = self.x * -1, .y = self.y * -1 };
     }
 
+    pub fn perpendicular(self: Point) Point {
+        return .{ .x = self.y, .y = -self.x };
+    }
+
+    pub fn abs(self: Point) Point {
+        return .{ .x = @intCast(@abs(self.x)), .y = @intCast(@abs(self.y)) };
+    }
+
+    pub fn min(self: Point, other: Point) Point {
+        return .{ .x = @min(self.x, other.x), .y = @min(self.y, other.y) };
+    }
+
+    pub fn max(self: Point, other: Point) Point {
+        return .{ .x = @max(self.x, other.x), .y = @max(self.y, other.y) };
+    }
+
     // See https://en.wikipedia.org/wiki/Determinant
     // Also useful for https://en.wikipedia.org/wiki/Shoelace_formula#Other_formulas_2
     pub fn determinant(self: Point, other: Point) i64 {
         return self.x * other.y - self.y * other.x;
+    }
+
+    pub fn dot(self: Point, other: Point) i64 {
+        return self.x * other.x + self.y * other.y;
     }
 
     pub fn equals(self: Point, other: Point) bool {
@@ -106,6 +126,10 @@ pub const CharGrid = struct {
         self.allocator.free(self.bytes);
     }
 
+    pub fn hash(self: CharGrid) u64 {
+        return std.hash.Wyhash.hash(0, self.bytes);
+    }
+
     pub fn byteIndexOf(self: CharGrid, x: u64, y: u64) u64 {
         return y * self.width + x;
     }
@@ -169,7 +193,17 @@ pub const CharGrid = struct {
         self.bytes[self.byteIndexOf(@intCast(p.x), @intCast(p.y))] = value;
     }
 
-    pub fn row(self: CharGrid, index: usize) []const u8 {
+    pub fn swapValues(self: CharGrid, a: Point, b: Point) void {
+        if (self.isInBounds(a) and self.isInBounds(b)) {
+            mem.swap(
+                u8,
+                &self.bytes[self.byteIndexOf(@intCast(a.x), @intCast(a.y))],
+                &self.bytes[self.byteIndexOf(@intCast(b.x), @intCast(b.y))],
+            );
+        }
+    }
+
+    pub fn row(self: CharGrid, index: usize) []u8 {
         return self.bytes[index * self.width .. (index + 1) * self.width];
     }
 };
