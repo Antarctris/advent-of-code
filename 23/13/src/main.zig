@@ -44,9 +44,9 @@ pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
     var solution_two: u64 = 0;
     while (map_iterator.next()) |map_str| {
         if (map_str.len == 0) continue;
-        const row_major = grid.CharGrid.init(allocator, map_str);
+        const row_major = grid.ByteGrid.parse(allocator, map_str);
         defer row_major.deinit();
-        const col_major = row_major.switchRowsAndCols();
+        const col_major = row_major.columnsToRows();
         defer col_major.deinit();
 
         if (indexOfRowMirror(row_major, 0)) |i| {
@@ -67,7 +67,7 @@ pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
     return .{ solution_one, solution_two };
 }
 
-pub fn indexOfRowMirror(map: grid.CharGrid, tolerance: usize) ?usize {
+pub fn indexOfRowMirror(map: grid.ByteGrid, tolerance: usize) ?usize {
     var optional_mirror: ?usize = null;
     var deviations: usize = 0;
     var row_index: usize = 1;
