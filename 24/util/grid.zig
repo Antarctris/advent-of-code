@@ -7,6 +7,8 @@ pub const Vec2 = struct {
     x: i64,
     y: i64,
 
+    pub const Zero = Vec2{ .x = 0, .y = 0 };
+
     pub fn translate(self: Vec2, other: Vec2) Vec2 {
         return .{ .x = self.x + other.x, .y = self.y + other.y };
     }
@@ -229,5 +231,12 @@ pub const ByteGrid = struct {
 
     pub fn row(self: ByteGrid, index: usize) []u8 {
         return self.bytes[index * self.width .. (index + 1) * self.width];
+    }
+
+    pub fn print(self: ByteGrid) void {
+        std.debug.print("\n", .{});
+        for (0..self.height) |r| {
+            std.debug.print("{s}\n", .{self.row(r)});
+        }
     }
 };
