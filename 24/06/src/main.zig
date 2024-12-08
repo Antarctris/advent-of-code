@@ -5,6 +5,7 @@ const assert = std.debug.assert;
 const print = std.debug.print;
 
 const util = @import("util");
+const grid = util.grid;
 
 fn readInputFile(allocator: Allocator, path: []const u8) ![]u8 {
     var file = try std.fs.cwd().openFile(path, .{});
@@ -40,15 +41,15 @@ pub fn main() !void {
 const directions = util.grid.CardinalDirections;
 
 pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
-    var map = util.grid.CharGrid.init(allocator, input);
+    var map = grid.ByteGrid.parse(allocator, input);
     defer map.deinit();
 
-    var history = std.AutoHashMap(util.grid.Point, [4]bool).init(allocator);
+    var history = std.AutoHashMap(grid.Vec2, [4]bool).init(allocator);
     defer history.deinit();
 
     var obstructions: u64 = 0;
 
-    var current = map.pointOf("^").?;
+    var current = map.locationOfScalar('^').?;
     var direction_index: usize = 0;
     var next = current.translate(directions[0]);
     while (map.isInBounds(next)) {
@@ -72,12 +73,12 @@ pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
 
 fn checkLoop(
     allocator: Allocator,
-    map: util.grid.CharGrid,
-    origin_history: std.AutoHashMap(util.grid.Point, [4]bool),
-    point: util.grid.Point,
+    map: grid.ByteGrid,
+    origin_history: std.AutoHashMap(grid.Vec2, [4]bool),
+    point: grid.Vec2,
     direction_idx: usize,
 ) bool {
-    var recent_history = std.AutoHashMap(util.grid.Point, [4]bool).init(allocator);
+    var recent_history = std.AutoHashMap(grid.Vec2, [4]bool).init(allocator);
     defer recent_history.deinit();
 
     var current = point;
@@ -98,8 +99,8 @@ fn checkLoop(
 }
 
 fn addDirection(
-    history: *std.AutoHashMap(util.grid.Point, [4]bool),
-    current: util.grid.Point,
+    history: *std.AutoHashMap(grid.Vec2, [4]bool),
+    current: grid.Vec2,
     direction_index: usize,
 ) void {
     const entry = history.get(current) orelse .{ false, false, false, false };
