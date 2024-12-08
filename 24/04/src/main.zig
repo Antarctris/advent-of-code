@@ -5,6 +5,7 @@ const assert = std.debug.assert;
 const print = std.debug.print;
 
 const util = @import("util");
+const grid = util.grid;
 
 fn readInputFile(allocator: Allocator, path: []const u8) ![]u8 {
     var file = try std.fs.cwd().openFile(path, .{});
@@ -38,18 +39,18 @@ pub fn main() !void {
 }
 
 pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
-    var map0 = util.grid.CharGrid.init(allocator, input);
-    defer map0.deinit();
-    const sum_one = map0.countDirections("XMAS", &util.grid.OctagonalDirections);
-    const sum_two = findXMAS(map0);
+    var map = util.grid.ByteGrid.parse(allocator, input);
+    defer map.deinit();
+    const sum_one = countDirections(map, "XMAS", &util.grid.OctagonalDirections);
+    const sum_two = findXMAS(map);
 
     return .{ sum_one, sum_two };
 }
 
-fn findXMAS(map: util.grid.CharGrid) u64 {
+fn findXMAS(map: util.grid.ByteGrid) u64 {
     var count: u64 = 0;
     for (1..map.height - 1) |y| {
-        var p = util.grid.Point{ .x = 1, .y = @intCast(y) };
+        var p = util.grid.Vec2{ .x = 1, .y = @intCast(y) };
         while (p.x < map.width - 1) : (p = p.translate(util.grid.E)) {
             if (map.get(p) == 'A') {
                 for (0..4) |i| {
@@ -68,6 +69,33 @@ fn findXMAS(map: util.grid.CharGrid) u64 {
         }
     }
     return count;
+}
+
+fn countDirections(map: grid.ByteGrid, needle: []const u8, directions: []const grid.Vec2) u64 {
+    var sum: u64 = 0;
+    for (0..map.height) |y| {
+        var index = grid.Vec2{ .x = 0, .y = @intCast(y) };
+        while (index.x < map.width) : (index = index.translate(grid.E)) {
+            sum += countDirectionsAt(map, index, needle, directions);
+        }
+    }
+    return sum;
+}
+
+fn countDirectionsAt(map: grid.ByteGrid, point: grid.Vec2, needle: []const u8, directions: []const grid.Vec2) u64 {
+    var sum: u64 = 0;
+    for (directions) |direction| {
+        if (map.isInBounds(point.translate(direction.times(@intCast(needle.len - 1))))) {
+            var p = point;
+            var i: usize = 0;
+            while (i < needle.len and map.get(p) == needle[i]) {
+                i += 1;
+                p = p.translate(direction);
+            }
+            sum += @intFromBool(i == needle.len);
+        }
+    }
+    return sum;
 }
 
 const sample_1: []const u8 =
