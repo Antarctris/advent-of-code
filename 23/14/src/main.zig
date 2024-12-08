@@ -5,6 +5,7 @@ const assert = std.debug.assert;
 const print = std.debug.print;
 
 const util = @import("util");
+const grid = util.grid;
 
 fn readInputFile(allocator: Allocator, path: []const u8) ![]u8 {
     var file = try std.fs.cwd().openFile(path, .{});
@@ -38,12 +39,12 @@ pub fn main() !void {
 }
 
 pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
-    var map0 = util.grid.CharGrid.init(allocator, input);
+    var map0 = grid.ByteGrid.parse(allocator, input);
     defer map0.deinit();
     tiltMap(map0, util.grid.N);
     const sum_one = getNorthWeight(map0);
 
-    var map1 = util.grid.CharGrid.init(allocator, input);
+    var map1 = grid.ByteGrid.parse(allocator, input);
     defer map1.deinit();
     var history = std.AutoHashMap(u64, u64).init(allocator);
     defer history.deinit();
@@ -63,9 +64,11 @@ pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
     return .{ sum_one, sum_two };
 }
 
-fn tiltMap(map: util.grid.CharGrid, tilt: util.grid.Point) void {
+fn tiltMap(map: grid.ByteGrid, tilt: grid.Vec2) void {
+    // Calculate major direction and start position from tilt
     const major = tilt.perpendicular().abs();
-    var current_major = tilt.times(tilt.abs().dot(util.grid.Point{ .x = @intCast(map.width), .y = @intCast(map.height) }) - 1).max(util.grid.Point{ .x = 0, .y = 0 });
+    var current_major = tilt.times(tilt.abs().dot(grid.Vec2{ .x = @intCast(map.width), .y = @intCast(map.height) }) - 1).max(grid.Vec2{ .x = 0, .y = 0 });
+
     while (map.isInBounds(current_major)) : (current_major = current_major.translate(major)) {
         var last_swap = current_major;
         var current_tilt = current_major;
@@ -81,13 +84,13 @@ fn tiltMap(map: util.grid.CharGrid, tilt: util.grid.Point) void {
     }
 }
 
-fn tiltCircle(map: util.grid.CharGrid) void {
+fn tiltCircle(map: grid.ByteGrid) void {
     for (0..4) |i| {
-        tiltMap(map, util.grid.CardinalDirections[@mod(4 - i, 4)]);
+        tiltMap(map, grid.CardinalDirections[@mod(4 - i, 4)]);
     }
 }
 
-fn getNorthWeight(map: util.grid.CharGrid) u64 {
+fn getNorthWeight(map: grid.ByteGrid) u64 {
     var count: u64 = 0;
     for (0..map.height) |ri| {
         count += mem.count(u8, map.row(ri), "O") * (map.height - ri);
