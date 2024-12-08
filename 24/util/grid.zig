@@ -3,89 +3,104 @@ const mem = std.mem;
 
 const Allocator = std.mem.Allocator;
 
-pub const Point = struct {
+pub const Vec2 = struct {
     x: i64,
     y: i64,
 
-    pub fn translate(self: Point, other: Point) Point {
+    pub fn translate(self: Vec2, other: Vec2) Vec2 {
         return .{ .x = self.x + other.x, .y = self.y + other.y };
     }
 
-    pub fn times(self: Point, n: i64) Point {
+    pub fn times(self: Vec2, n: i64) Vec2 {
         return .{ .x = self.x * n, .y = self.y * n };
     }
 
-    pub fn inverse(self: Point) Point {
+    pub fn inverse(self: Vec2) Vec2 {
         return .{ .x = self.x * -1, .y = self.y * -1 };
     }
 
-    pub fn perpendicular(self: Point) Point {
+    pub fn perpendicular(self: Vec2) Vec2 {
         return .{ .x = self.y, .y = -self.x };
     }
 
-    pub fn abs(self: Point) Point {
+    pub fn abs(self: Vec2) Vec2 {
         return .{ .x = @intCast(@abs(self.x)), .y = @intCast(@abs(self.y)) };
     }
 
-    pub fn min(self: Point, other: Point) Point {
+    pub fn min(self: Vec2, other: Vec2) Vec2 {
         return .{ .x = @min(self.x, other.x), .y = @min(self.y, other.y) };
     }
 
-    pub fn max(self: Point, other: Point) Point {
+    pub fn max(self: Vec2, other: Vec2) Vec2 {
         return .{ .x = @max(self.x, other.x), .y = @max(self.y, other.y) };
     }
 
     // See https://en.wikipedia.org/wiki/Determinant
     // Also useful for https://en.wikipedia.org/wiki/Shoelace_formula#Other_formulas_2
-    pub fn determinant(self: Point, other: Point) i64 {
+    pub fn determinant(self: Vec2, other: Vec2) i64 {
         return self.x * other.y - self.y * other.x;
     }
 
-    pub fn dot(self: Point, other: Point) i64 {
+    pub fn dot(self: Vec2, other: Vec2) i64 {
         return self.x * other.x + self.y * other.y;
     }
 
-    pub fn equals(self: Point, other: Point) bool {
+    pub fn equals(self: Vec2, other: Vec2) bool {
         return self.x == other.x and self.y == other.y;
     }
 
     // Orthogonal only distance, see https://en.wikipedia.org/wiki/Taxicab_geometry
-    pub fn manhattanDistance(self: Point, other: Point) u64 {
+    pub fn manhattanDistance(self: Vec2, other: Vec2) u64 {
         return @intCast(@abs(self.x - other.x) + @abs(self.y - other.y));
     }
 
     // Ortho- and diagonal distance, see https://en.wikipedia.org/wiki/Chebyshev_distance
-    pub fn chebyshevDistance(self: Point, other: Point) u64 {
+    pub fn chebyshevDistance(self: Vec2, other: Vec2) u64 {
         return @intCast(@max(@abs(self.x - other.x), @abs(self.y - other.y)));
     }
 
     // Euclidean distance (pythagorean), see https://en.wikipedia.org/wiki/Euclidean_distanctarstoa
-    pub fn euclideanDistance(self: Point, other: Point) f64 {
+    pub fn euclideanDistance(self: Vec2, other: Vec2) f64 {
         const a: f64 = @intCast(self.x - other.x);
         const b: f64 = @intCast(self.y - other.y);
         return @sqrt(a * a + b * b);
     }
 };
 
-pub const N = Point{ .x = 0, .y = -1 };
-pub const E = Point{ .x = 1, .y = 0 };
-pub const S = Point{ .x = 0, .y = 1 };
-pub const W = Point{ .x = -1, .y = 0 };
-pub const CardinalDirections: [4]Point = .{ N, E, S, W };
+pub const N = Vec2{ .x = 0, .y = -1 };
+pub const E = Vec2{ .x = 1, .y = 0 };
+pub const S = Vec2{ .x = 0, .y = 1 };
+pub const W = Vec2{ .x = -1, .y = 0 };
+pub const CardinalDirections: [4]Vec2 = .{ N, E, S, W };
 pub const NE = N.translate(E);
 pub const SE = S.translate(E);
 pub const SW = S.translate(W);
 pub const NW = N.translate(W);
-pub const OrdinalDirections: [4]Point = .{ NE, SE, SW, NW };
-pub const OctagonalDirections: [8]Point = .{ N, NE, E, SE, S, SW, W, NW };
+pub const OrdinalDirections: [4]Vec2 = .{ NE, SE, SW, NW };
+pub const OctagonalDirections: [8]Vec2 = .{ N, NE, E, SE, S, SW, W, NW };
 
-pub const CharGrid = struct {
+pub const ByteGrid = struct {
     allocator: Allocator,
-    height: u64,
     width: u64,
+    height: u64,
     bytes: []u8,
 
-    pub fn init(allocator: Allocator, input: []const u8) CharGrid {
+    pub fn init(allocator: Allocator, width: u64, height: u64, initial: ?u8) ByteGrid {
+        var bytes = allocator.alloc(u8, width * height) catch unreachable;
+        if (initial) |value| {
+            for (0..bytes.len) |index| {
+                bytes[index] = value;
+            }
+        }
+        return .{
+            .allocator = allocator,
+            .width = width,
+            .height = height,
+            .bytes = bytes,
+        };
+    }
+
+    pub fn parse(allocator: Allocator, input: []const u8) ByteGrid {
         // Files usually end with a final \n and therefore an additional empty line, meaning every
         // meaningful line is terminated with \n and this can be used to count meaningful lines.
         const height = std.mem.count(u8, input, "\n") + @intFromBool(input[input.len - 1] != '\n');
@@ -107,7 +122,7 @@ pub const CharGrid = struct {
         };
     }
 
-    pub fn switchRowsAndCols(self: CharGrid) CharGrid {
+    pub fn columnsToRows(self: ByteGrid) ByteGrid {
         var bytes = self.allocator.alloc(u8, self.height * self.width) catch unreachable;
         for (0..self.height) |y| {
             for (0..self.width) |x| {
@@ -122,33 +137,64 @@ pub const CharGrid = struct {
         };
     }
 
-    pub fn deinit(self: CharGrid) void {
+    pub fn deinit(self: ByteGrid) void {
         self.allocator.free(self.bytes);
     }
 
-    pub fn hash(self: CharGrid) u64 {
+    pub fn hash(self: ByteGrid) u64 {
         return std.hash.Wyhash.hash(0, self.bytes);
     }
 
-    pub fn byteIndexOf(self: CharGrid, x: u64, y: u64) u64 {
+    pub fn byteIndexOf(self: ByteGrid, x: u64, y: u64) u64 {
         return y * self.width + x;
     }
 
-    pub fn isInBounds(self: CharGrid, p: Point) bool {
+    pub fn isInBounds(self: ByteGrid, p: Vec2) bool {
         return p.x >= 0 and p.y >= 0 and p.x < self.width and p.y < self.height;
     }
 
-    pub fn pointOf(self: CharGrid, needle: []const u8) ?Point {
+    pub fn scalars(self: ByteGrid, allocator: Allocator) []u8 {
+        var elements = std.AutoArrayHashMap(u8, void).init(self.allocator);
+        defer elements.deinit();
+
+        for (self.bytes) |b| {
+            elements.put(b, {}) catch unreachable;
+        }
+
+        return allocator.dupe(u8, elements.keys()) catch unreachable;
+    }
+
+    pub fn locationOf(self: ByteGrid, needle: []const u8) ?Vec2 {
         var y: u64 = 0;
         while (y < self.height) : (y += 1) {
             if (std.mem.indexOf(u8, self.bytes[y * self.width .. (y + 1) * self.width], needle)) |x| {
-                return Point{ .x = @intCast(x), .y = @intCast(y) };
+                return Vec2{ .x = @intCast(x), .y = @intCast(y) };
             }
         }
         return null;
     }
 
-    pub fn count(self: CharGrid, needle: []const u8) u64 {
+    pub fn locationOfScalar(self: ByteGrid, scalar: u8) ?Vec2 {
+        return self.locationOf(&.{scalar});
+    }
+
+    pub fn locationsOf(self: ByteGrid, allocator: Allocator, needle: []const u8) []Vec2 {
+        var points = std.ArrayList(Vec2).init(self.allocator);
+        defer points.deinit();
+        var y: u64 = 0;
+        while (y < self.height) : (y += 1) {
+            if (std.mem.indexOf(u8, self.bytes[y * self.width .. (y + 1) * self.width], needle)) |x| {
+                points.append(Vec2{ .x = @intCast(x), .y = @intCast(y) }) catch unreachable;
+            }
+        }
+        return allocator.dupe(Vec2, points.items) catch unreachable;
+    }
+
+    pub fn locationsOfScalar(self: ByteGrid, allocator: Allocator, scalar: u8) []Vec2 {
+        return self.locationsOf(allocator, &.{scalar});
+    }
+
+    pub fn count(self: ByteGrid, needle: []const u8) u64 {
         var sum: u64 = 0;
         var y: u64 = 0;
         while (y < self.height) : (y += 1) {
@@ -157,43 +203,21 @@ pub const CharGrid = struct {
         return sum;
     }
 
-    pub fn countDirections(self: CharGrid, needle: []const u8, directions: []const Point) u64 {
-        var sum: u64 = 0;
-        for (0..self.height) |y| {
-            var index = Point{ .x = 0, .y = @intCast(y) };
-            while (index.x < self.width) : (index = index.translate(E)) {
-                sum += self.countDirectionsAt(index, needle, directions);
-            }
-        }
-        return sum;
+    pub fn countScalar(self: ByteGrid, scalar: u8) u64 {
+        return self.count(&.{scalar});
     }
 
-    pub fn countDirectionsAt(self: CharGrid, point: Point, needle: []const u8, directions: []const Point) u64 {
-        var sum: u64 = 0;
-        for (directions) |direction| {
-            if (self.isInBounds(point.tranlateTimes(direction, @intCast(needle.len - 1)))) {
-                var p = point;
-                var i: usize = 0;
-                while (i < needle.len and self.get(p) == needle[i]) {
-                    i += 1;
-                    p = p.translate(direction);
-                }
-                sum += @intFromBool(i == needle.len);
-            }
-        }
-        return sum;
-    }
-
-    pub fn get(self: CharGrid, p: Point) ?u8 {
-        if (p.x < 0 or p.y < 0) return null;
+    pub fn get(self: ByteGrid, p: Vec2) ?u8 {
+        if (!self.isInBounds(p)) return null;
         return self.bytes[self.byteIndexOf(@intCast(p.x), @intCast(p.y))];
     }
 
-    pub fn set(self: CharGrid, p: Point, value: u8) void {
+    pub fn set(self: ByteGrid, p: Vec2, value: u8) void {
+        if (!self.isInBounds(p)) return;
         self.bytes[self.byteIndexOf(@intCast(p.x), @intCast(p.y))] = value;
     }
 
-    pub fn swapValues(self: CharGrid, a: Point, b: Point) void {
+    pub fn swapValues(self: ByteGrid, a: Vec2, b: Vec2) void {
         if (self.isInBounds(a) and self.isInBounds(b)) {
             mem.swap(
                 u8,
@@ -203,7 +227,7 @@ pub const CharGrid = struct {
         }
     }
 
-    pub fn row(self: CharGrid, index: usize) []u8 {
+    pub fn row(self: ByteGrid, index: usize) []u8 {
         return self.bytes[index * self.width .. (index + 1) * self.width];
     }
 };
