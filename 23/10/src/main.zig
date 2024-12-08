@@ -43,12 +43,12 @@ pub fn main() !void {
 
 pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
     // Init map
-    var map = grid.CharGrid.init(allocator, input);
+    var map = grid.ByteGrid.parse(allocator, input);
     defer map.deinit();
 
     // Find start, assuming start is always a corner
-    var corner = map.pointOf("S").?;
-    var direction: grid.Point = switch (map.get(corner.translate(grid.N)) orelse 0) {
+    var corner = map.locationOfScalar('S').?;
+    var direction: grid.Vec2 = switch (map.get(corner.translate(grid.N)) orelse 0) {
         '|', 'F', '7' => grid.N,
         else => grid.S,
     };
