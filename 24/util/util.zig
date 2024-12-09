@@ -1,6 +1,7 @@
 const std = @import("std");
 
 pub const grid = @import("grid.zig");
+pub const math = @import("math.zig");
 pub const mem = @import("mem.zig");
 
 pub fn parseNumbersScalar(allocator: std.mem.Allocator, comptime T: type, base: u8, string: []const u8, delimiter: u8) []T {
@@ -34,4 +35,26 @@ pub fn intFromDigit(char: u8) ?u4 {
         '0'...'9' => @intCast(char - '0'),
         else => null,
     };
+}
+
+/// Unstable in-place sort, see https://ziglang.org/documentation/0.13.0/std/#std.sort.heapContext
+pub fn heapOrder(
+    comptime T: type,
+    items: []T,
+    context: anytype,
+    comptime lessThanFn: fn (@TypeOf(context), lhs: T, rhs: T) std.math.Order,
+) void {
+    const Context = struct {
+        items: []T,
+        sub_ctx: @TypeOf(context),
+
+        pub fn lessThan(ctx: @This(), a: usize, b: usize) bool {
+            return lessThanFn(ctx.sub_ctx, ctx.items[a], ctx.items[b]) == std.math.Order.lt;
+        }
+
+        pub fn swap(ctx: @This(), a: usize, b: usize) void {
+            return std.mem.swap(T, &ctx.items[a], &ctx.items[b]);
+        }
+    };
+    std.sort.heapContext(0, items.len, Context{ .items = items, .sub_ctx = context });
 }

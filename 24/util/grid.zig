@@ -147,6 +147,18 @@ pub const ByteGrid = struct {
         return std.hash.Wyhash.hash(0, self.bytes);
     }
 
+    pub fn mutateBytes(self: ByteGrid, comptime transform: fn (u8) u8) void {
+        for (0..self.bytes.len) |i| {
+            self.bytes[i] = transform(self.bytes[i]);
+        }
+    }
+
+    pub fn mutateBytesContext(self: ByteGrid, comptime Ctx: type, comptime transform: fn (Ctx, u8) u8, context: Ctx) void {
+        for (0..self.bytes.len) |i| {
+            self.bytes[i] = transform(context, self.bytes[i]);
+        }
+    }
+
     pub fn byteIndexOf(self: ByteGrid, x: u64, y: u64) u64 {
         return y * self.width + x;
     }
