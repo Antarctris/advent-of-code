@@ -167,6 +167,10 @@ pub const ByteGrid = struct {
         return p.x >= 0 and p.y >= 0 and p.x < self.width and p.y < self.height;
     }
 
+    pub fn corner(self: ByteGrid, d: Vec2) Vec2 {
+        return Vec2{ .x = @intCast(@max(d.x, 0) * self.width), .y = @intCast(@max(d.y, 0) * self.height) };
+    }
+
     pub fn scalars(self: ByteGrid, allocator: Allocator) []u8 {
         var elements = std.AutoArrayHashMap(u8, void).init(self.allocator);
         defer elements.deinit();
@@ -197,8 +201,12 @@ pub const ByteGrid = struct {
         defer points.deinit();
         var y: u64 = 0;
         while (y < self.height) : (y += 1) {
-            if (std.mem.indexOf(u8, self.bytes[y * self.width .. (y + 1) * self.width], needle)) |x| {
-                points.append(Vec2{ .x = @intCast(x), .y = @intCast(y) }) catch unreachable;
+            var x: u64 = 0;
+            while (x <= self.width - needle.len) : (x += 1) {
+                const index = self.byteIndexOf(x, y);
+                if (std.mem.eql(u8, self.bytes[index .. index + needle.len], needle)) {
+                    points.append(Vec2{ .x = @intCast(x), .y = @intCast(y) }) catch unreachable;
+                }
             }
         }
         return allocator.dupe(Vec2, points.items) catch unreachable;
@@ -206,6 +214,51 @@ pub const ByteGrid = struct {
 
     pub fn locationsOfScalar(self: ByteGrid, allocator: Allocator, scalar: u8) []Vec2 {
         return self.locationsOf(allocator, &.{scalar});
+    }
+
+    pub fn neighborsOfRect(self: ByteGrid, allocator: Allocator, a: Vec2, b: Vec2) []Vec2 {
+        const nw = Vec2{ .x = @min(a.x, b.x) - 1, .y = @min(a.y, b.y) - 1 };
+        const se = Vec2{ .x = @max(a.x, b.x) + 1, .y = @max(a.y, b.y) + 1 };
+        return self.borderOfRect(allocator, nw, se);
+    }
+
+    pub fn borderOfRect(self: ByteGrid, allocator: Allocator, a: Vec2, b: Vec2) []Vec2 {
+        var locations = std.ArrayList(Vec2).init(self.allocator);
+        defer locations.deinit();
+        const nw = Vec2{ .x = @min(a.x, b.x), .y = @min(a.y, b.y) };
+        const se = Vec2{ .x = @max(a.x, b.x), .y = @max(a.y, b.y) };
+        const width = se.x - nw.x;
+        const height = se.y - nw.y;
+
+        var x: i64 = 0;
+        var y: i64 = 0;
+
+        while (x < width) : (x += 1) {
+            const vec = Vec2{ .x = nw.x + x, .y = nw.y + y };
+            if (self.isInBounds(vec)) {
+                locations.append(vec) catch unreachable;
+            }
+        }
+        while (y < height) : (y += 1) {
+            const vec = Vec2{ .x = nw.x + x, .y = nw.y + y };
+            if (self.isInBounds(vec)) {
+                locations.append(vec) catch unreachable;
+            }
+        }
+        while (x > 0) : (x -= 1) {
+            const vec = Vec2{ .x = nw.x + x, .y = nw.y + y };
+            if (self.isInBounds(vec)) {
+                locations.append(vec) catch unreachable;
+            }
+        }
+        while (y > 0) : (y -= 1) {
+            const vec = Vec2{ .x = nw.x + x, .y = nw.y + y };
+            if (self.isInBounds(vec)) {
+                locations.append(vec) catch unreachable;
+            }
+        }
+
+        return allocator.dupe(Vec2, locations.items) catch unreachable;
     }
 
     pub fn count(self: ByteGrid, needle: []const u8) u64 {
