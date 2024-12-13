@@ -6,7 +6,7 @@ if [[ ! $# -eq 2 ]]; then
 fi
 
 # Set up paths
-BASE_PATH="/home/$USER/Projects/aoc_timing_refactor"
+BASE_PATH="/home/$USER/Projects/advent-of-code"
 YEAR="$1"
 DAY="$2"
 
