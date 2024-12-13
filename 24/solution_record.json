@@ -1,0 +1,83 @@
+{
+    "lang": "Zig",
+    "results": [
+        {
+            "id": 1,
+            "title": "Day 1: Historian Hysteria",
+            "part_one": 2.7901801466941833e-1,
+            "part_two": 2.8855100274086e-1
+        },
+        {
+            "id": 2,
+            "title": "Day 2: Red-Nosed Reports",
+            "part_one": 8.89398992061615e-1,
+            "part_two": 1.1470390558242798e0
+        },
+        {
+            "id": 3,
+            "title": "Day 3: Mull It Over",
+            "part_one": 8.990199863910675e-2,
+            "part_two": 7.158199697732925e-2
+        },
+        {
+            "id": 4,
+            "title": "Day 4: Ceres Search",
+            "part_one": 1.3572299480438232e0,
+            "part_two": 3.5450899600982666e-1
+        },
+        {
+            "id": 5,
+            "title": "Day 5: Print Queue",
+            "part_one": 3.4066399931907654e-1,
+            "part_two": 4.5291900634765625e-1
+        },
+        {
+            "id": 6,
+            "title": "Day 6: Guard Gallivant",
+            "part_one": 6.032320261001587e-1,
+            "part_two": 3.456240234375e2
+        },
+        {
+            "id": 7,
+            "title": "Day 7: Bridge Repair",
+            "part_one": 1.3845460414886475e0,
+            "part_two": 3.941194534301758e1
+        },
+        {
+            "id": 8,
+            "title": "Day 8: Resonant Collinearity",
+            "part_one": 6.710190176963806e-1,
+            "part_two": 7.704229950904846e-1
+        },
+        {
+            "id": 9,
+            "title": "Day 9: Disk Fragmenter",
+            "part_one": 1.5094099938869476e-1,
+            "part_two": 8.24571533203125e1
+        },
+        {
+            "id": 10,
+            "title": "Day 10: Hoof It",
+            "part_one": 2.9096201062202454e-1,
+            "part_two": 3.0825498700141907e-1
+        },
+        {
+            "id": 11,
+            "title": "Day 11: Plutonian Pebbles",
+            "part_one": 3.2872939109802246e0,
+            "part_two": 3.821089172363281e1
+        },
+        {
+            "id": 12,
+            "title": "Day 12: Garden Groups",
+            "part_one": 1.1299093246459961e1,
+            "part_two": 1.2569836616516113e1
+        },
+        {
+            "id": 13,
+            "title": "Day 13: Claw Contraption",
+            "part_one": 1.3318699598312378e-1,
+            "part_two": 1.5060199797153473e-1
+        }
+    ]
+}
