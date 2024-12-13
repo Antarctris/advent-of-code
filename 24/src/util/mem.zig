@@ -89,3 +89,35 @@ pub fn sum(comptime T: type, slice: []const T) T {
     }
     return accumulator;
 }
+
+pub fn tokenizeNumbers(comptime T: type, buffer: []const u8) NumberIterator(T) {
+    std.debug.assert(buffer.len > 0);
+    return .{
+        .index = 0,
+        .buffer = buffer,
+    };
+}
+
+pub fn NumberIterator(comptime T: type) type {
+    return struct {
+        index: usize,
+        buffer: []const u8,
+
+        const Self = @This();
+
+        pub fn next(self: *Self) ?T {
+            // Move to start of number or end of buffer
+            while (self.index < self.buffer.len and (self.buffer[self.index] < '0' or self.buffer[self.index] > '9')) {
+                self.index += 1;
+            }
+            if (self.index == self.buffer.len) return null;
+
+            var acc: T = 0;
+            while (self.index < self.buffer.len and self.buffer[self.index] >= '0' and self.buffer[self.index] <= '9') {
+                acc = acc * 10 + @as(T, self.buffer[self.index] - '0');
+                self.index += 1;
+            }
+            return acc;
+        }
+    };
+}

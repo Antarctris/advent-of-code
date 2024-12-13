@@ -1,5 +1,8 @@
 # AoC
-**/input.txt
+**/input*
+
+# web/tokens
+**/.session.txt
 
 # Zig programming language
 **/.zig-cache/

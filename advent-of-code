@@ -6,7 +6,7 @@ if [[ ! $# -eq 2 ]]; then
 fi
 
 # Set up paths
-BASE_PATH="/home/$USER/Projects/advent-of-code"
+BASE_PATH="/home/$USER/Projects/aoc_timing_refactor"
 YEAR="$1"
 DAY="$2"
 
@@ -16,30 +16,36 @@ if [ ! -d "$BASE_PATH/$YEAR" ]; then
     echo "Directory for year does not exist!"
     exit 1
 fi
-
-# Check if day exists already or if it needs to be copied from template
-if [ ! -d "$BASE_PATH/$YEAR/$DAY" ]; then
-    if [ ! -d "$BASE_PATH/$YEAR/template" ]; then 
-        echo "Directory for day does not exist and there is no template to create it!"
-        exit 1
+(
+    cd "$BASE_PATH/$YEAR"
+    # If file doesn't exist, but a template is available, create file from template
+    if [ ! $DAY -eq "00" -a ! -f "src/solutions/day$DAY.zig" -a -f "src/solutions/day00.zig" ]; then
+        cp -HLr "src/solutions/day00.zig" "src/solutions/day$DAY.zig"
+        zig build update-solutions
     fi
-    cp -HLr "$BASE_PATH/$YEAR/template" "$BASE_PATH/$YEAR/$DAY"
-    touch "$BASE_PATH/$YEAR/$DAY/input.txt"
-fi
 
-ZELLIJ_SESSION_NAME="advent-of-code.$YEAR.$DAY"
+    # input file doesn't exist, try to download it
+    if [ ! -f "input/$DAY.txt" ]; then
+        curl "https://adventofcode.com/20$YEAR/day/$(sed 's/^0*//' <<<$DAY)/input" -H "Cookie: session=$(cat .session.txt)" -o "input/$DAY.txt"
+    fi
 
-# Delete old, exited session, so zellij doesn't revive it and we get a fresh session
-zellij list-sessions | grep "$ZELLIJ_SESSION_NAME" | grep EXITED; greprc=$?
-if [[ $greprc -eq 0 ]]; then
-    zellij delete-session "$ZELLIJ_SESSION_NAME"
-fi
+    ZELLIJ_SESSION_NAME="advent-of-code.$YEAR"
 
-# Reattach dispatched sessions, since those were probably dispatched on purpose for e.g.
-# unsaved changes. Otherwise create fresh session with layout.
-zellij list-sessions | grep "$ZELLIJ_SESSION_NAME"; greprc=$?
-if [[ $greprc -eq 0 ]]; then
-    zellij attach "$ZELLIJ_SESSION_NAME"
-else
-    (cd "$BASE_PATH/$YEAR/$DAY" && zellij -s "$ZELLIJ_SESSION_NAME" -n ../zellij.kdl)
-fi
+    # Delete old, exited session, so zellij doesn't revive it and we get a fresh session
+    zellij list-sessions | grep "$ZELLIJ_SESSION_NAME" | grep EXITED
+    greprc=$?
+    if [[ $greprc -eq 0 ]]; then
+        zellij delete-session "$ZELLIJ_SESSION_NAME"
+    fi
+
+    # Reattach dispatched sessions, since those were probably dispatched on purpose for e.g.
+    # unsaved changes. Otherwise create fresh session with layout.
+    zellij list-sessions | grep "$ZELLIJ_SESSION_NAME"
+    greprc=$?
+    if [[ $greprc -eq 0 ]]; then
+        zellij attach "$ZELLIJ_SESSION_NAME"
+    else
+        export DAY=$DAY
+        zellij -s "$ZELLIJ_SESSION_NAME" -n zellij.kdl
+    fi
+)
