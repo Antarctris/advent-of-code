@@ -26,7 +26,7 @@ fi
 
     # input file doesn't exist, try to download it
     if [ ! -f "input/$DAY.txt" ]; then
-        curl "https://adventofcode.com/20$YEAR/day/$(sed 's/^0*//' <<<$DAY)/input" -H "Cookie: session=$(cat .session.txt)" -o "input/$DAY.txt"
+        curl "https://adventofcode.com/20$YEAR/day/$(sed 's/^0*//' <<<$DAY)/input" -H "Cookie: session=$(cat ${BASE_PATH}/.session.txt)" -o "input/$DAY.txt"
     fi
 
     ZELLIJ_SESSION_NAME="advent-of-code.$YEAR"
