@@ -304,4 +304,17 @@ pub const ByteGrid = struct {
             std.debug.print("{s}\n", .{self.row(r)});
         }
     }
+
+    pub fn printRect(self: ByteGrid, a: Vec2, b: Vec2) void {
+        const nw = Vec2{ .x = @min(a.x, b.x), .y = @min(a.y, b.y) };
+        const se = Vec2{ .x = @max(a.x, b.x), .y = @max(a.y, b.y) };
+        const width: u64 = @intCast(se.x - nw.x);
+        const height: u64 = @intCast(se.y - nw.y);
+
+        const x: u64 = @intCast(nw.x);
+        std.debug.print("\n", .{});
+        for (0..height) |y| {
+            std.debug.print("{s}\n", .{self.bytes[self.byteIndexOf(x, y)..self.byteIndexOf(x + width, y)]});
+        }
+    }
 };

@@ -78,6 +78,12 @@
             "title": "Day 13: Claw Contraption",
             "part_one": 1.3318699598312378e-1,
             "part_two": 1.5060199797153473e-1
+        },
+        {
+            "id": 14,
+            "title": "Day 14: Restroom Redoubt",
+            "part_one": 1.0438700020313263e-1,
+            "part_two": 1.948506622314453e2
         }
     ]
 }

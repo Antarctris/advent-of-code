@@ -83,7 +83,7 @@ fn updateRecord(allocator: Allocator, record: ResultRecord) !void {
         while (index < result_records.items.len and result_records.items[index].id < record.id) {
             index += 1;
         }
-        if (result_records.items[index].id == record.id) {
+        if (index < result_records.items.len and result_records.items[index].id == record.id) {
             result_records.items[index].update(record);
         } else {
             try result_records.insert(index, record);
