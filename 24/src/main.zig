@@ -67,6 +67,7 @@ pub fn main() !void {
 }
 
 const record_path = "solution_record.json";
+const report_path = "README.md";
 fn updateRecord(allocator: Allocator, record: ResultRecord) !void {
     if (std.fs.cwd().readFileAlloc(allocator, record_path, 1 << 12)) |old_file| { // 4MiB
         defer allocator.free(old_file);
@@ -92,10 +93,40 @@ fn updateRecord(allocator: Allocator, record: ResultRecord) !void {
         const new_record = YearRecord{ .lang = ziglang, .results = result_records.items };
         const new_json = try std.json.stringifyAlloc(allocator, new_record, .{ .whitespace = .indent_4 });
 
-        const file = try std.fs.cwd().createFile(record_path, .{});
-        defer file.close();
+        const record_file = try std.fs.cwd().createFile(record_path, .{});
+        defer record_file.close();
+        _ = try record_file.writeAll(new_json);
 
-        _ = try file.writeAll(new_json);
+        const report_file = try std.fs.cwd().createFile(report_path, .{});
+        defer report_file.close();
+
+        _ = try report_file.writeAll(report_header);
+
+        var record_index: usize = 0;
+        for (1..26) |report_index| {
+            if (record_index < new_record.results.len and new_record.results[record_index].id == report_index) {
+                const rec = new_record.results[record_index];
+                const day_title: []u8 = try std.fmt.allocPrint(allocator, "[{s}](src/solutions/day{d:0>2}.zig)", .{ rec.title, rec.id });
+                defer allocator.free(day_title);
+
+                const star_one = if (rec.part_one != null) "⭐" else " ";
+                const time_one = if (rec.part_one) |ms| try std.fmt.allocPrint(allocator, "{d:.3}", .{ms}) else try std.fmt.allocPrint(allocator, "-", .{});
+
+                const star_two = if (rec.part_one != null) "⭐" else " ";
+                const time_two = if (rec.part_two) |ms| try std.fmt.allocPrint(allocator, "{d:.3}", .{ms}) else try std.fmt.allocPrint(allocator, "-", .{});
+
+                const line = try std.fmt.allocPrint(
+                    allocator,
+                    "| {s: <61} |  {s}{s} | {s: >10} | {s: >10} |\n",
+                    .{ day_title, star_one, star_two, time_one, time_two },
+                );
+                _ = try report_file.writeAll(line);
+                record_index += 1;
+            } else { // Optional to include lines for unsolved puzzles
+                //const line = try std.fmt.allocPrint(allocator, report_empty_line, .{report_index});
+                //_ = try report_file.writeAll(line);
+            }
+        }
     } else |_| {
         var records: [1]ResultRecord = .{record};
         const new_record = YearRecord{ .lang = ziglang, .results = &records };
@@ -140,3 +171,14 @@ fn resultRecordFirst(ctx: void, a: ResultRecord, b: ResultRecord) bool {
     _ = ctx;
     return a.id < b.id;
 }
+
+const report_header =
+    \\| 2024                                                          | Stars | Time (ms)  | Time (ms)  |
+    \\|---------------------------------------------------------------|:-----:|-----------:|-----------:|
+    \\
+;
+
+const report_empty_line =
+    \\|  Day {d}                                                       |       |          - |          - |
+    \\
+;
