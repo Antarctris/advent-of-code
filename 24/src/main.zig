@@ -109,10 +109,10 @@ fn updateRecord(allocator: Allocator, record: ResultRecord) !void {
                 const day_title: []u8 = try std.fmt.allocPrint(allocator, "[{s}](src/solutions/day{d:0>2}.zig)", .{ rec.title, rec.id });
                 defer allocator.free(day_title);
 
-                const star_one = if (rec.part_one != null) "⭐" else " ";
+                const star_one = if (rec.part_one != null) "⭐" else "  ";
                 const time_one = if (rec.part_one) |ms| try std.fmt.allocPrint(allocator, "{d:.3}", .{ms}) else try std.fmt.allocPrint(allocator, "-", .{});
 
-                const star_two = if (rec.part_one != null) "⭐" else " ";
+                const star_two = if (rec.part_two != null) "⭐" else "  ";
                 const time_two = if (rec.part_two) |ms| try std.fmt.allocPrint(allocator, "{d:.3}", .{ms}) else try std.fmt.allocPrint(allocator, "-", .{});
 
                 const line = try std.fmt.allocPrint(

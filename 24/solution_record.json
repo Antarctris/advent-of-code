@@ -89,7 +89,13 @@
             "id": 15,
             "title": "Day 15: Warehouse Woes",
             "part_one": 7.932779788970947e-1,
-            "part_two": 1.6306109428405762e0
+            "part_two": 1.628896951675415e0
+        },
+        {
+            "id": 16,
+            "title": "Day 16: Reindeer Maze",
+            "part_one": 1.6352066040039062e1,
+            "part_two": 3.613977813720703e1
         }
     ]
 }

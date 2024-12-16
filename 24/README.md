@@ -14,4 +14,5 @@
 | [Day 12: Garden Groups](src/solutions/day12.zig)              |  ⭐⭐ |     11.299 |     12.570 |
 | [Day 13: Claw Contraption](src/solutions/day13.zig)           |  ⭐⭐ |      0.133 |      0.151 |
 | [Day 14: Restroom Redoubt](src/solutions/day14.zig)           |  ⭐⭐ |      0.101 |    194.851 |
-| [Day 15: Warehouse Woes](src/solutions/day15.zig)             |  ⭐⭐ |      0.793 |      1.631 |
+| [Day 15: Warehouse Woes](src/solutions/day15.zig)             |  ⭐⭐ |      0.793 |      1.629 |
+| [Day 16: Reindeer Maze](src/solutions/day16.zig)              |  ⭐⭐ |     16.352 |     36.140 |
