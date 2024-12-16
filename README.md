@@ -9,5 +9,5 @@ with a customized, opinionated layout and setup according to the language used t
 
 These are the years, where I have solved puzzles and the language used:
 
-* 23 -> Zig (tested stuff out in preparation for 24, not complete yet)
-* 24 -> Zig
+* [2023](23) -> Zig (tested stuff out in preparation for 24, not complete yet)
+* [2024](24) -> Zig
