@@ -94,8 +94,14 @@
         {
             "id": 16,
             "title": "Day 16: Reindeer Maze",
-            "part_one": 1.6352066040039062e1,
-            "part_two": 3.613977813720703e1
+            "part_one": 1.6157691955566406e1,
+            "part_two": 3.43134765625e1
+        },
+        {
+            "id": 17,
+            "title": "Day 17: Chronospatial Computer",
+            "part_one": 5.522000137716532e-3,
+            "part_two": 8.045293426513672e1
         }
     ]
 }
