@@ -6,6 +6,7 @@ const mem = std.mem;
 const Allocator = std.mem.Allocator;
 
 const util = @import("util");
+const graph = util.graph;
 const grid = util.grid;
 const Solution = @import("./solution.zig");
 
@@ -20,38 +21,61 @@ pub fn part_one(allocator: Allocator, input: []const u8) ?u64 {
     var maze = grid.ByteGrid.parse(allocator, input);
     defer maze.deinit();
 
-    var visited = std.AutoHashMap(Node, u64).init(allocator);
-    defer visited.deinit();
+    const start_pos = maze.locationOfScalar('S').?;
 
-    var queue = std.PriorityQueue(WeightedNode, void, orderNodes).init(allocator, {});
-    defer queue.deinit();
+    var maze_graph = graph
+        .Graph(Node, grid.ByteGrid, traverse_buf_size, traverse, isEnd)
+        .init(allocator, maze);
+    maze_graph.deinit();
 
-    const startPosition = Node{ .p = maze.locationOfScalar('S').?, .d = 1 };
-    queue.add(WeightedNode{ .n = startPosition, .w = 0 }) catch unreachable;
-    visited.put(startPosition, 0) catch unreachable;
+    const result = maze_graph.dijkstra(allocator, .cost, &.{Node{ .p = start_pos, .d = 1 }}) catch unreachable;
 
-    while (queue.removeOrNull()) |w_node| {
-        const next = WeightedNode{ .n = Node{ .p = w_node.n.p.translate(grid.CardinalDirections[w_node.n.d]), .d = w_node.n.d }, .w = w_node.w + 1 };
-        if (maze.get(next.n.p).? == 'E') {
-            return next.w;
-        }
-        if (maze.get(next.n.p).? != '#' and (visited.get(next.n) == null or next.w < visited.get(next.n).?)) {
-            visited.put(next.n, next.w) catch unreachable;
-            queue.add(next) catch unreachable;
-        }
-        const rotRight = WeightedNode{ .n = Node{ .p = w_node.n.p, .d = w_node.n.d +% 1 }, .w = w_node.w + 1000 };
-        if (visited.get(rotRight.n) == null or rotRight.w < visited.get(rotRight.n).?) {
-            visited.put(rotRight.n, rotRight.w) catch unreachable;
-            queue.add(rotRight) catch unreachable;
-        }
-        const rotLeft = WeightedNode{ .n = Node{ .p = w_node.n.p, .d = w_node.n.d +% 3 }, .w = w_node.w + 1000 };
-        if (visited.get(rotLeft.n) == null or rotLeft.w < visited.get(rotLeft.n).?) {
-            visited.put(rotLeft.n, rotLeft.w) catch unreachable;
-            queue.add(rotLeft) catch unreachable;
+    return result.cost;
+}
+
+pub fn part_two(allocator: Allocator, input: []const u8) ?u64 {
+    var maze = grid.ByteGrid.parse(allocator, input);
+    defer maze.deinit();
+
+    const start_pos = maze.locationOfScalar('S').?;
+
+    var maze_graph = graph
+        .Graph(Node, grid.ByteGrid, traverse_buf_size, traverse, isEnd)
+        .init(allocator, maze);
+    maze_graph.deinit();
+
+    var result = maze_graph.dijkstra(allocator, .routes, &.{Node{ .p = start_pos, .d = 1 }}) catch unreachable;
+    defer result.routes.deinit();
+
+    var bestSpots = std.AutoHashMap(grid.Vec2, void).init(allocator);
+    defer bestSpots.deinit();
+
+    for (0..result.routes.items.len) |i| {
+        defer result.routes.items[i].deinit();
+        for (result.routes.items[i].items) |node| {
+            bestSpots.put(node.p, {}) catch unreachable;
         }
     }
 
-    return null;
+    return bestSpots.count();
+}
+
+const traverse_buf_size = 4;
+
+fn traverse(context: grid.ByteGrid, buf: []struct { Node, u64 }, a: Node) []struct { Node, u64 } {
+    buf[0] = .{ Node{ .p = a.p, .d = a.d +% 3 }, 1000 };
+    buf[1] = .{ Node{ .p = a.p, .d = a.d +% 1 }, 1000 };
+    var i: usize = 2;
+    const next = a.p.translate(grid.CardinalDirections[a.d]);
+    if (context.get(next) != '#') {
+        buf[2] = .{ Node{ .p = next, .d = a.d }, 1 };
+        i += 1;
+    }
+    return buf[0..i];
+}
+
+fn isEnd(context: grid.ByteGrid, a: Node) bool {
+    return context.get(a.p).? == 'E';
 }
 
 fn orderNodes(ctx: void, a: WeightedNode, b: WeightedNode) std.math.Order {
@@ -69,7 +93,7 @@ const WeightedNode = struct {
     w: u64,
 };
 
-pub fn part_two(allocator: Allocator, input: []const u8) ?u64 {
+pub fn part_two_orig(allocator: Allocator, input: []const u8) ?u64 {
     var maze = grid.ByteGrid.parse(allocator, input);
     defer maze.deinit();
 
