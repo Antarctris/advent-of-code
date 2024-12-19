@@ -1,0 +1,11 @@
+{
+    "lang": "Zig",
+    "results": [
+        {
+            "id": 1,
+            "title": "Day 1: Trebuchet?!",
+            "part_one": 1.0702700167894363e-1,
+            "part_two": 3.015410006046295e-1
+        }
+    ]
+}
