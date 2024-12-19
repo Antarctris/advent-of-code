@@ -108,6 +108,12 @@
             "title": "Day 18: RAM Run",
             "part_one": 1.6496659517288208e0,
             "part_two": 1.4632994384765625e3
+        },
+        {
+            "id": 19,
+            "title": "Day 19: Linen Layout",
+            "part_one": 1.981829833984375e1,
+            "part_two": 5.05294303894043e1
         }
     ]
 }
