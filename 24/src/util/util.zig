@@ -1,5 +1,6 @@
 const std = @import("std");
 
+pub const graph = @import("graph.zig");
 pub const grid = @import("grid.zig");
 pub const math = @import("math.zig");
 pub const mem = @import("mem.zig");
