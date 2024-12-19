@@ -7,7 +7,7 @@ layout {
             args "-c" "nvim; bash"
         }
         pane name="zig built test && zig build run" command="bash" {
-            args "-c" "while sleep 0.1; do find -L src/main.zig src input -type f | entr -ds 'clear; tmp=${0##*/}; tmp=${tmp//[!0-9]/}; tmp=${tmp:=$DAY}; timeout 30 zig build test-day${tmp} && echo -e \"\n\\033[0;33mDEBUG BUILD:\\033[0m\" && zig build run -- ${tmp} && echo -e \"\n\\033[1;32mRELEASE BUILD:\\033[0m\" && zig build run -Doptimize=ReleaseSafe -- ${tmp}'; done"
+            args "-c" "while sleep 0.1; do find -L src/main.zig src input -type f | entr -ds 'clear; tmp=${0##*/}; tmp=${tmp//[!0-9]/}; tmp=${tmp:=$DAY}; timeout 30 zig build test-day${tmp} && echo -e \"\n\\033[0;33mDEBUG BUILD:\\033[0m\" && (timeout 60 zig build run -- ${tmp} || echo TIMEOUT\n) && echo -e \"\n\\033[1;32mRELEASE BUILD:\\033[0m\" && zig build run -Doptimize=ReleaseSafe -- ${tmp}'; done"
         }
     }
     pane size=1 borderless=true {
