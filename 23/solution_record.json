@@ -6,6 +6,12 @@
             "title": "Day 1: Trebuchet?!",
             "part_one": 1.0702700167894363e-1,
             "part_two": 3.015410006046295e-1
+        },
+        {
+            "id": 2,
+            "title": "Day 2: Cube Conundrum",
+            "part_one": 1.5497800707817078e-1,
+            "part_two": 1.5408599376678467e-1
         }
     ]
 }
