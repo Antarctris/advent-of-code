@@ -102,6 +102,12 @@
             "title": "Day 17: Chronospatial Computer",
             "part_one": 5.522000137716532e-3,
             "part_two": 8.045293426513672e1
+        },
+        {
+            "id": 18,
+            "title": "Day 18: RAM Run",
+            "part_one": 1.6496659517288208e0,
+            "part_two": 1.4632994384765625e3
         }
     ]
 }

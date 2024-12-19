@@ -22,9 +22,9 @@ pub fn get(index: usize) ?Solution {
         15 => @import("./solutions/day15.zig").solution,
         16 => @import("./solutions/day16.zig").solution,
         17 => @import("./solutions/day17.zig").solution,
+        18 => @import("./solutions/day18.zig").solution,
         else => null,
     };
-
 }
 
 test {
