@@ -4,3 +4,4 @@
 | [Day 2: Cube Conundrum](src/solutions/day02.zig)              |  ⭐⭐ |      0.155 |      0.154 |
 | [Day 3: Gear Ratios](src/solutions/day03.zig)                 |  ⭐⭐ |      0.126 |      0.215 |
 | [Day 4: Scratchcards](src/solutions/day04.zig)                |  ⭐⭐ |      0.084 |      0.082 |
+| [Day 5: If You Give A Seed A Fertilizer](src/solutions/day05.zig) |  ⭐⭐ |      0.041 |      0.097 |

@@ -24,6 +24,12 @@
             "title": "Day 4: Scratchcards",
             "part_one": 8.399199694395065e-2,
             "part_two": 8.213499933481216e-2
+        },
+        {
+            "id": 5,
+            "title": "Day 5: If You Give A Seed A Fertilizer",
+            "part_one": 4.139700159430504e-2,
+            "part_two": 9.705299884080887e-2
         }
     ]
 }

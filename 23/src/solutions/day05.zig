@@ -1,48 +1,29 @@
+const Self = @This();
+
+// imports
 const std = @import("std");
 const mem = std.mem;
 const Allocator = std.mem.Allocator;
-const assert = std.debug.assert;
-const print = std.debug.print;
 
 const util = @import("util");
+const Solution = @import("./solution.zig");
 
-fn readInputFile(allocator: Allocator, path: []const u8) ![]u8 {
-    var file = try std.fs.cwd().openFile(path, .{});
-    defer file.close();
-    const file_size = (try file.metadata()).size();
-    const input = try allocator.alloc(u8, file_size);
-    _ = try file.readAll(input);
-    return input;
+// interface
+pub const solution: Solution = .{ .vtable = Solution.VTable.init(Self) };
+
+pub fn title() []const u8 {
+    return "Day 5: If You Give A Seed A Fertilizer";
 }
 
-pub fn main() !void {
-    assert(std.os.argv.len == 2);
-
-    // Set up output
-    const stdout = std.io.getStdOut().writer();
-
-    // Initialze allocator
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    defer arena.deinit();
-    const allocator = arena.allocator();
-
-    // Read input
-    const path: []const u8 = mem.span(std.os.argv[1]);
-    const input = try readInputFile(allocator, path);
-
-    // Run challenge subroutine
-    const solution: [2]u64 = solveChallenge(allocator, input);
-
-    // Print solution
-    try stdout.print("Solution:\nPart 1: {d}\nPart 2: {d}\n", .{ solution[0], solution[1] });
-}
-
-pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
+pub fn part_one(allocator: Allocator, input: []const u8) ?u64 {
     var line_iterator = std.mem.splitScalar(u8, input, '\n');
     var seed_iterator = std.mem.splitScalar(u8, line_iterator.next().?, ' ');
 
     _ = line_iterator.next();
     var maps = parseAlmanachMaps(allocator, &line_iterator);
+    defer for (0..maps.len) |index| {
+        maps[index].deinit();
+    };
 
     var seeds = std.ArrayList(u64).init(allocator);
     defer seeds.deinit();
@@ -63,18 +44,48 @@ pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
     }
     _ = line_iterator.next();
 
-    // Part One
     for (maps) |map| {
         for (seeds.items, 0..) |item, index| {
             seeds.items[index] = map.translate(item);
         }
     }
-    var location_one: u64 = std.math.maxInt(u64);
+    var location: u64 = std.math.maxInt(u64);
     for (seeds.items) |item| {
-        location_one = @min(location_one, item);
+        location = @min(location, item);
     }
 
-    // Part Two
+    return location;
+}
+
+pub fn part_two(allocator: Allocator, input: []const u8) ?u64 {
+    var line_iterator = std.mem.splitScalar(u8, input, '\n');
+    var seed_iterator = std.mem.splitScalar(u8, line_iterator.next().?, ' ');
+
+    _ = line_iterator.next();
+    var maps = parseAlmanachMaps(allocator, &line_iterator);
+    defer for (0..maps.len) |index| {
+        maps[index].deinit();
+    };
+
+    var seeds = std.ArrayList(u64).init(allocator);
+    defer seeds.deinit();
+    var seed_ranges = std.ArrayList(AlmanachRange).init(allocator);
+    defer seed_ranges.deinit();
+
+    _ = seed_iterator.next();
+    var seed_range_start: ?u64 = null;
+    while (seed_iterator.next()) |seed_str| {
+        const number = std.fmt.parseInt(u64, seed_str, 10) catch unreachable;
+        seeds.append(number) catch unreachable;
+        if (seed_range_start) |seed| {
+            seed_ranges.append(AlmanachRange{ .start = seed, .len = number }) catch unreachable;
+            seed_range_start = null;
+        } else {
+            seed_range_start = number;
+        }
+    }
+    _ = line_iterator.next();
+
     var ranges: []AlmanachRange = allocator.dupe(AlmanachRange, seed_ranges.items) catch unreachable;
     defer allocator.free(ranges);
     for (maps) |map| {
@@ -82,15 +93,12 @@ pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
         defer allocator.free(old);
         ranges = map.translateRanges(allocator, old);
     }
-    var location_two: u64 = std.math.maxInt(u64);
+    var location: u64 = std.math.maxInt(u64);
     for (ranges) |range| {
-        location_two = @min(location_two, range.start);
+        location = @min(location, range.start);
     }
 
-    for (0..maps.len) |index| {
-        maps[index].deinit();
-    }
-    return .{ location_one, location_two };
+    return location;
 }
 
 const AlmanachRange = struct {
@@ -213,6 +221,16 @@ fn parseAlmanachMaps(allocator: Allocator, line_iterator: *mem.SplitIterator(u8,
     return maps;
 }
 
+test "part_1.sample_1" {
+    const result = part_one(std.testing.allocator, sample_1) orelse return error.SkipZigTest;
+    try std.testing.expectEqual(35, result);
+}
+
+test "part_2.sample_1" {
+    const result = part_two(std.testing.allocator, sample_1) orelse return error.SkipZigTest;
+    try std.testing.expectEqual(46, result);
+}
+
 const sample_1: []const u8 =
     \\seeds: 79 14 55 13
     \\
@@ -249,13 +267,3 @@ const sample_1: []const u8 =
     \\56 93 4
     \\
 ;
-
-test "part_1.sample_1" {
-    const solution = solveChallenge(std.testing.allocator, sample_1);
-    try std.testing.expectEqual(35, solution[0]);
-}
-
-test "part_2.sample_1" {
-    const solution = solveChallenge(std.testing.allocator, sample_1);
-    try std.testing.expectEqual(46, solution[1]);
-}
