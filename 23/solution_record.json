@@ -36,6 +36,12 @@
             "title": "Day 6: Wait For It",
             "part_one": 1.370999962091446e-3,
             "part_two": 1.0111132621765137e1
+        },
+        {
+            "id": 7,
+            "title": "Day 7: Camel Cards",
+            "part_one": 5.164660215377808e-1,
+            "part_two": 5.000200271606445e-1
         }
     ]
 }

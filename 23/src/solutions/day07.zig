@@ -1,68 +1,52 @@
+const Self = @This();
+
+// imports
 const std = @import("std");
 const mem = std.mem;
 const Allocator = std.mem.Allocator;
-const assert = std.debug.assert;
-const print = std.debug.print;
 
 const util = @import("util");
+const Solution = @import("./solution.zig");
 
-fn readInputFile(allocator: Allocator, path: []const u8) ![]u8 {
-    var file = try std.fs.cwd().openFile(path, .{});
-    defer file.close();
-    const file_size = (try file.metadata()).size();
-    const input = try allocator.alloc(u8, file_size);
-    _ = try file.readAll(input);
-    return input;
+// interface
+pub const solution: Solution = .{ .vtable = Solution.VTable.init(Self) };
+
+pub fn title() []const u8 {
+    return "Day 7: Camel Cards";
 }
 
-pub fn main() !void {
-    assert(std.os.argv.len == 2);
-
-    // Set up output
-    const stdout = std.io.getStdOut().writer();
-
-    // Initialze allocator
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    defer arena.deinit();
-    const allocator = arena.allocator();
-
-    // Read input
-    const path: []const u8 = mem.span(std.os.argv[1]);
-    const input = try readInputFile(allocator, path);
-
-    // Run challenge subroutine
-    const solution: [2]u64 = solveChallenge(allocator, input);
-
-    // Print solution
-    try stdout.print("Solution:\nPart 1: {d}\nPart 2: {d}\n", .{ solution[0], solution[1] });
-}
-
-pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
-    var line_iterator = mem.splitScalar(u8, input, '\n');
-    var hands_one = std.PriorityQueue(Hand, *const fn (card: u8) u32, handLessThan).init(allocator, cardValue);
-    defer hands_one.deinit();
-    var hands_two = std.PriorityQueue(Hand, *const fn (card: u8) u32, handLessThan).init(allocator, cardValueJoker);
-    defer hands_two.deinit();
+pub fn part_one(allocator: Allocator, input: []const u8) ?u64 {
+    var line_iterator = mem.tokenizeScalar(u8, input, '\n');
+    var hands = std.PriorityQueue(Hand, *const fn (card: u8) u32, handLessThan).init(allocator, cardValue);
+    defer hands.deinit();
     while (line_iterator.next()) |line| {
-        if (line.len == 0) continue;
-        hands_one.add(Hand.FromSlice(line, false)) catch unreachable;
-        hands_two.add(Hand.FromSlice(line, true)) catch unreachable;
+        hands.add(Hand.FromSlice(line, false)) catch unreachable;
     }
 
-    // Part One
-    var total_one: u64 = 0;
-    var rank_one: u64 = 1;
-    while (hands_one.removeOrNull()) |hand| : (rank_one += 1) {
-        total_one += hand.bid * rank_one;
+    var total: u64 = 0;
+    var rank: u64 = 1;
+    while (hands.removeOrNull()) |hand| : (rank += 1) {
+        total += hand.bid * rank;
     }
 
-    var total_two: u64 = 0;
-    var rank_two: u64 = 1;
-    while (hands_two.removeOrNull()) |hand| : (rank_two += 1) {
-        total_two += hand.bid * rank_two;
+    return total;
+}
+
+pub fn part_two(allocator: Allocator, input: []const u8) ?u64 {
+    var line_iterator = mem.tokenizeScalar(u8, input, '\n');
+    var hands = std.PriorityQueue(Hand, *const fn (card: u8) u32, handLessThan).init(allocator, cardValueJoker);
+    defer hands.deinit();
+    while (line_iterator.next()) |line| {
+        hands.add(Hand.FromSlice(line, true)) catch unreachable;
     }
 
-    return .{ total_one, total_two };
+    var total: u64 = 0;
+    var rank: u64 = 1;
+    while (hands.removeOrNull()) |hand| : (rank += 1) {
+        total += hand.bid * rank;
+    }
+
+    return total;
 }
 
 fn cardValue(card: u8) u32 {
@@ -184,6 +168,16 @@ fn handLessThan(valueFn: *const fn (u8) u32, a: Hand, b: Hand) std.math.Order {
     return std.math.order(@intFromEnum(a.type), @intFromEnum(b.type));
 }
 
+test "part_1.sample_1" {
+    const result = part_one(std.testing.allocator, sample_1) orelse return error.SkipZigTest;
+    try std.testing.expectEqual(6440, result);
+}
+
+test "part_2.sample_1" {
+    const result = part_two(std.testing.allocator, sample_1) orelse return error.SkipZigTest;
+    try std.testing.expectEqual(5905, result);
+}
+
 const sample_1: []const u8 =
     \\32T3K 765
     \\T55J5 684
@@ -192,13 +186,3 @@ const sample_1: []const u8 =
     \\QQQJA 483
     \\
 ;
-
-test "part_1.sample_1" {
-    const solution = solveChallenge(std.testing.allocator, sample_1);
-    try std.testing.expectEqual(6440, solution[0]);
-}
-
-test "part_2.sample_1" {
-    const solution = solveChallenge(std.testing.allocator, sample_1);
-    try std.testing.expectEqual(5905, solution[1]);
-}

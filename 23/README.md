@@ -6,3 +6,4 @@
 | [Day 4: Scratchcards](src/solutions/day04.zig)                |  ⭐⭐ |      0.084 |      0.082 |
 | [Day 5: If You Give A Seed A Fertilizer](src/solutions/day05.zig) |  ⭐⭐ |      0.041 |      0.097 |
 | [Day 6: Wait For It](src/solutions/day06.zig)                 |  ⭐⭐ |      0.001 |     10.111 |
+| [Day 7: Camel Cards](src/solutions/day07.zig)                 |  ⭐⭐ |      0.516 |      0.500 |
