@@ -30,6 +30,12 @@
             "title": "Day 5: If You Give A Seed A Fertilizer",
             "part_one": 4.139700159430504e-2,
             "part_two": 9.705299884080887e-2
+        },
+        {
+            "id": 6,
+            "title": "Day 6: Wait For It",
+            "part_one": 1.370999962091446e-3,
+            "part_two": 1.0111132621765137e1
         }
     ]
 }
