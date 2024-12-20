@@ -1,46 +1,30 @@
+const Self = @This();
+
+// imports
 const std = @import("std");
 const mem = std.mem;
 const Allocator = std.mem.Allocator;
-const assert = std.debug.assert;
-const print = std.debug.print;
 
 const util = @import("util");
+const Solution = @import("./solution.zig");
 
-fn readInputFile(allocator: Allocator, path: []const u8) ![]u8 {
-    var file = try std.fs.cwd().openFile(path, .{});
-    defer file.close();
-    const file_size = (try file.metadata()).size();
-    const input = try allocator.alloc(u8, file_size);
-    _ = try file.readAll(input);
-    return input;
+// interface
+pub const solution: Solution = .{ .vtable = Solution.VTable.init(Self) };
+
+pub fn title() []const u8 {
+    return "Day 3: Gear Ratios";
 }
 
-pub fn main() !void {
-    assert(std.os.argv.len == 2);
-
-    // Set up output
-    const stdout = std.io.getStdOut().writer();
-
-    // Initialze allocator
-    var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-    defer arena.deinit();
-    const allocator = arena.allocator();
-
-    // Read input
-    const path: []const u8 = mem.span(std.os.argv[1]);
-    const input = try readInputFile(allocator, path);
-
-    // Run challenge subroutine
-    const solution: [2]u64 = solveChallenge(allocator, input);
-
-    // Print solution
-    try stdout.print("Solution:\nPart 1: {d}\nPart 2: {d}\n", .{ solution[0], solution[1] });
-}
-
-pub fn solveChallenge(allocator: Allocator, input: []const u8) [2]u64 {
+pub fn part_one(allocator: Allocator, input: []const u8) ?u64 {
     var engine_schematic = EngineSchematic.init(allocator, input);
     defer engine_schematic.deinit();
-    return .{ engine_schematic.partSum(), engine_schematic.gearSum() };
+    return engine_schematic.partSum();
+}
+
+pub fn part_two(allocator: Allocator, input: []const u8) ?u64 {
+    var engine_schematic = EngineSchematic.init(allocator, input);
+    defer engine_schematic.deinit();
+    return engine_schematic.gearSum();
 }
 
 const EngineSchematic = struct {
@@ -151,6 +135,16 @@ const EngineSchematic = struct {
     }
 };
 
+test "part_1.sample_1" {
+    const result = part_one(std.testing.allocator, sample_1) orelse return error.SkipZigTest;
+    try std.testing.expectEqual(4361, result);
+}
+
+test "part_2.sample_1" {
+    const result = part_two(std.testing.allocator, sample_1) orelse return error.SkipZigTest;
+    try std.testing.expectEqual(467835, result);
+}
+
 const sample_1: []const u8 =
     \\467..114..
     \\...*......
@@ -164,13 +158,3 @@ const sample_1: []const u8 =
     \\.664.598..
     \\
 ;
-
-test "part_1.sample_1" {
-    const solution = solveChallenge(std.testing.allocator, sample_1);
-    try std.testing.expectEqual(4361, solution[0]);
-}
-
-test "part_2.sample_1" {
-    const solution = solveChallenge(std.testing.allocator, sample_1);
-    try std.testing.expectEqual(467835, solution[1]);
-}
