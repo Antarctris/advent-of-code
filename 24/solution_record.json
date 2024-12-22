@@ -120,6 +120,12 @@
             "title": "Day 20: Race Condition",
             "part_one": 2.3986120223999023e0,
             "part_two": 1.1508495330810547e2
+        },
+        {
+            "id": 21,
+            "title": "Day 21: Keypad Conundrum",
+            "part_one": 1.617100089788437e-2,
+            "part_two": 2.0399000495672226e-2
         }
     ]
 }

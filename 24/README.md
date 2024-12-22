@@ -20,3 +20,4 @@
 | [Day 18: RAM Run](src/solutions/day18.zig)                    |  ⭐⭐ |      1.650 |   1463.299 |
 | [Day 19: Linen Layout](src/solutions/day19.zig)               |  ⭐⭐ |     19.818 |     50.529 |
 | [Day 20: Race Condition](src/solutions/day20.zig)             |  ⭐⭐ |      2.399 |    115.085 |
+| [Day 21: Keypad Conundrum](src/solutions/day21.zig)           |  ⭐⭐ |      0.016 |      0.020 |
