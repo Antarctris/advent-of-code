@@ -29,7 +29,7 @@ pub fn main() !void {
         // Read input
         var path_buf: [12]u8 = undefined;
         const path = try std.fmt.bufPrint(&path_buf, "input/{d:0>2}.txt", .{day});
-        const input = try std.fs.cwd().readFileAlloc(allocator, path, 1 << 16); // 64MiB
+        const input = try std.fs.cwd().readFileAlloc(allocator, path, 1 << 16); // 64KiB
 
         try stdout.print("Processing...\n", .{});
 
@@ -69,7 +69,7 @@ pub fn main() !void {
 const record_path = "solution_record.json";
 const report_path = "README.md";
 fn updateRecord(allocator: Allocator, record: ResultRecord) !void {
-    if (std.fs.cwd().readFileAlloc(allocator, record_path, 1 << 12)) |old_file| { // 4MiB
+    if (std.fs.cwd().readFileAlloc(allocator, record_path, 1 << 16)) |old_file| { // 64KiB
         defer allocator.free(old_file);
 
         const old_record = try std.json.parseFromSlice(YearRecord, allocator, old_file, .{});
