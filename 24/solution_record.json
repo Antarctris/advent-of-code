@@ -132,6 +132,12 @@
             "title": "Day 22: Monkey Market",
             "part_one": 1.1839256286621094e1,
             "part_two": 3.468866882324219e2
+        },
+        {
+            "id": 23,
+            "title": "Day 23: LAN Party",
+            "part_one": 1.1153810024261475e0,
+            "part_two": 4.934203796386719e2
         }
     ]
 }

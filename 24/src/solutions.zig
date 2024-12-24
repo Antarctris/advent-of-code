@@ -27,6 +27,7 @@ pub fn get(index: usize) ?Solution {
         20 => @import("./solutions/day20.zig").solution,
         21 => @import("./solutions/day21.zig").solution,
         22 => @import("./solutions/day22.zig").solution,
+        23 => @import("./solutions/day23.zig").solution,
         else => null,
     };
 

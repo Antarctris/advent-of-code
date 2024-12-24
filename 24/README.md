@@ -22,3 +22,4 @@
 | [Day 20: Race Condition](src/solutions/day20.zig)             |  ⭐⭐ |      2.399 |    115.085 |
 | [Day 21: Keypad Conundrum](src/solutions/day21.zig)           |  ⭐⭐ |      0.016 |      0.020 |
 | [Day 22: Monkey Market](src/solutions/day22.zig)              |  ⭐⭐ |     11.839 |    346.887 |
+| [Day 23: LAN Party](src/solutions/day23.zig)                  |  ⭐⭐ |      1.115 |    493.420 |
