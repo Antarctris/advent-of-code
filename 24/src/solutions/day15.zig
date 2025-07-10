@@ -147,7 +147,7 @@ pub fn part_two(allocator: Allocator, input: []const u8) ?u64 {
             attempt.deinit(); // Last, empty step
             if (!blocked) {
                 while (stack.items.len > 0) {
-                    var swap = stack.pop();
+                    var swap = stack.pop().?;
                     for (swap.keys()) |item| {
                         warehouse.swapValues(item, item.translate(there));
                     }

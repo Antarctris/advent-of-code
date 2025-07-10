@@ -71,7 +71,7 @@ fn calculatePerimeterPrice(allocator: Allocator, input: []const u8, count: *cons
     defer workload_extern.deinit();
     workload_extern.put(grid.Vec2.Zero, {}) catch unreachable;
 
-    while (workload_extern.popOrNull()) |origin| {
+    while (workload_extern.pop()) |origin| {
         var region = Region.init(allocator);
         region.crop = map.get(origin.key).?;
 
@@ -79,7 +79,7 @@ fn calculatePerimeterPrice(allocator: Allocator, input: []const u8, count: *cons
         defer workload_region.deinit();
         workload_region.put(origin.key, {}) catch unreachable;
 
-        while (workload_region.popOrNull()) |node_kv| {
+        while (workload_region.pop()) |node_kv| {
             const node = node_kv.key;
             _ = workload_extern.swapRemove(node);
             done.put(node, {}) catch unreachable;

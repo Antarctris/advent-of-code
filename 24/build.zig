@@ -9,6 +9,7 @@ pub fn build(b: *std.Build) void {
     // means any target is allowed, and the default is native. Other options
     // for restricting supported target set are available.
     const target = b.standardTargetOptions(.{});
+    const host = b.resolveTargetQuery(.{});
 
     // Standard optimization options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
@@ -61,7 +62,10 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/solutions/solutions.zig"),
         .target = target,
         .optimize = optimize,
-        .test_runner = b.path("test_runner.zig"),
+        .test_runner = .{
+            .path = b.path("test_runner.zig"),
+            .mode = .simple,
+        },
     });
     exe_unit_tests.root_module.addImport("util", util);
 
@@ -72,12 +76,12 @@ pub fn build(b: *std.Build) void {
     const solutions_gen = b.addExecutable(.{
         .name = "solution_collection_gen",
         .root_source_file = b.path("tools/solutions_gen.zig"),
-        .target = b.host,
+        .target = host,
     });
     const solutions_gen_run = b.addRunArtifact(solutions_gen);
     solutions_gen_run.has_side_effects = true;
     const generated_solutions_file = solutions_gen_run.addOutputFileArg("solutions.zig");
-    const wf = b.addWriteFiles();
+    const wf = b.addUpdateSourceFiles();
     wf.addCopyFileToSource(generated_solutions_file, "src/solutions.zig");
     const update_solutions_step = b.step("update-solutions", "update src/solutions.zig to latest");
     update_solutions_step.dependOn(&wf.step);
@@ -98,7 +102,10 @@ pub fn build(b: *std.Build) void {
             .root_source_file = b.path(test_n_step_path),
             .target = target,
             .optimize = optimize,
-            .test_runner = b.path("test_runner.zig"),
+            .test_runner = .{
+                .path = b.path("test_runner.zig"),
+                .mode = .simple,
+            },
         });
         exe_unit_tests_n.root_module.addImport("util", util);
 

@@ -25,7 +25,7 @@ pub fn part_one(allocator: Allocator, input: []const u8) ?u64 {
 
     while (line_iterator.next()) |line| {
         if (line.len == 0) continue;
-        var lr_tokens = mem.tokenize(u8, line, " ");
+        var lr_tokens = mem.tokenizeAny(u8, line, " ");
         const l_value = std.fmt.parseInt(u64, lr_tokens.next().?, 10) catch unreachable;
         l.add(l_value) catch unreachable;
         const r_value = std.fmt.parseInt(u64, lr_tokens.next().?, 10) catch unreachable;
@@ -51,7 +51,7 @@ pub fn part_two(allocator: Allocator, input: []const u8) ?u64 {
 
     while (line_iterator.next()) |line| {
         if (line.len == 0) continue;
-        var lr_tokens = mem.tokenize(u8, line, " ");
+        var lr_tokens = mem.tokenizeAny(u8, line, " ");
         const l_value = std.fmt.parseInt(u64, lr_tokens.next().?, 10) catch unreachable;
         l.add(l_value) catch unreachable;
         const r_value = std.fmt.parseInt(u64, lr_tokens.next().?, 10) catch unreachable;
