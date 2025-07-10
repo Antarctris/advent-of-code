@@ -138,6 +138,12 @@
             "title": "Day 23: LAN Party",
             "part_one": 1.1153810024261475e0,
             "part_two": 4.934203796386719e2
+        },
+        {
+            "id": 24,
+            "title": "Day 24: Crossed Wires",
+            "part_one": 3.085319995880127e-1,
+            "part_two": null
         }
     ]
 }

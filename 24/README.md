@@ -19,7 +19,8 @@
 | [Day 17: Chronospatial Computer](src/solutions/day17.zig)     |  ⭐⭐ |      0.006 |     80.453 |
 | [Day 18: RAM Run](src/solutions/day18.zig)                    |  ⭐⭐ |      1.650 |   1463.299 |
 | [Day 19: Linen Layout](src/solutions/day19.zig)               |  ⭐⭐ |     19.818 |     50.529 |
-| [Day 20: Race Condition](src/solutions/day20.zig)             |  ⭐⭐ |      2.399 |    115.085 |
+| [Day 20: Race Condition](src/solutions/day20.zig)             |  ⭐⭐ |      2.047 |    104.197 |
 | [Day 21: Keypad Conundrum](src/solutions/day21.zig)           |  ⭐⭐ |      0.016 |      0.020 |
 | [Day 22: Monkey Market](src/solutions/day22.zig)              |  ⭐⭐ |     11.839 |    346.887 |
 | [Day 23: LAN Party](src/solutions/day23.zig)                  |  ⭐⭐ |      1.115 |    493.420 |
+| [Day 24: Crossed Wires](src/solutions/day24.zig)              |  ⭐   |      0.309 |          - |
