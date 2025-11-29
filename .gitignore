@@ -1,6 +1,9 @@
 # AoC
 **/input/
 
+# direnv
+**/.direnv/
+
 # web/tokens
 **/.session.txt
 

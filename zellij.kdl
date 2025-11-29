@@ -1,0 +1,16 @@
+layout {
+    pane size=1 borderless=true {
+        plugin location="tab-bar"
+    }
+    pane split_direction="vertical" {
+        pane name="nvim" command="bash" {
+            args "-c" "nvim; bash"
+        }
+        pane name="build -> test -> run" command="bash" {
+            args "-c" "./aoc-run"
+        }
+    }
+    pane size=1 borderless=true {
+        plugin location="status-bar"
+    }
+}
