@@ -12,7 +12,7 @@ const Solution = @import("./solution.zig");
 pub const solution: Solution = .{ .vtable = Solution.VTable.init(Self) };
 
 pub fn title() []const u8 {
-    return "Day ";
+    return "Day XX: Title";
 }
 
 pub fn part_one(allocator: Allocator, input: []const u8) ?u64 {

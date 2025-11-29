@@ -54,12 +54,14 @@ pub fn main() !void {
                 try stdout.flush();
             }
 
-            try updateRecord(allocator, ResultRecord{
-                .id = @intCast(day),
-                .title = solution.title(),
-                .part_one = if (value_one != null) elapsed_ms_one else null,
-                .part_two = if (value_two != null) elapsed_ms_two else null,
-            });
+            if (day != 0) {
+                try updateRecord(allocator, ResultRecord{
+                    .id = @intCast(day),
+                    .title = solution.title(),
+                    .part_one = if (value_one != null) elapsed_ms_one else null,
+                    .part_two = if (value_two != null) elapsed_ms_two else null,
+                });
+            }
         }
 
         try stdout.print("Done!\n", .{});
