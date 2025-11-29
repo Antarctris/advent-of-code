@@ -50,13 +50,14 @@ pub fn main() !void {
             if (value_two) |value| {
                 try stdout.print("Part 2: {d}, {d:.3} ms\n", .{ value, elapsed_ms_two });
             }
-
-            try updateRecord(allocator, ResultRecord{
-                .id = @intCast(day),
-                .title = solution.title(),
-                .part_one = if (value_one != null) elapsed_ms_one else null,
-                .part_two = if (value_two != null) elapsed_ms_two else null,
-            });
+            if (day != 0) {
+                try updateRecord(allocator, ResultRecord{
+                    .id = @intCast(day),
+                    .title = solution.title(),
+                    .part_one = if (value_one != null) elapsed_ms_one else null,
+                    .part_two = if (value_two != null) elapsed_ms_two else null,
+                });
+            }
         }
 
         try stdout.print("Done!\n", .{});
@@ -173,7 +174,7 @@ fn resultRecordFirst(ctx: void, a: ResultRecord, b: ResultRecord) bool {
 }
 
 const report_header =
-    \\| 2024                                                          | Stars | Time (ms)  | Time (ms)  |
+    \\| 2023                                                          | Stars | Time (ms)  | Time (ms)  |
     \\|---------------------------------------------------------------|:-----:|-----------:|-----------:|
     \\
 ;
