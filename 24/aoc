@@ -1,0 +1,42 @@
+#!/bin/bash
+
+if [[ ! $# -eq 1 ]]; then
+    echo "You need to provide desired day as argument!"
+    exit 1
+fi
+
+# Set up paths
+#BASE_PATH="/home/$USER/Projects/advent-of-code"
+YEAR="24"
+DAY="$1"
+
+# If file doesn't exist, but a template is available, create file from template
+if [ ! $DAY -eq "00" -a ! -f "src/solutions/day$DAY.zig" -a -f "src/solutions/day00.zig" ]; then
+    cp -HLr "src/solutions/day00.zig" "src/solutions/day$DAY.zig"
+    zig build update-solutions
+fi
+
+# input file doesn't exist, try to download it
+if [ ! -f "input/$DAY.txt" ]; then
+    curl "https://adventofcode.com/20$YEAR/day/$(sed 's/^0*//' <<<$DAY)/input" -H "Cookie: session=$(cat ../.session.txt)" -o "input/$DAY.txt"
+fi
+
+ZELLIJ_SESSION_NAME="advent-of-code.$YEAR"
+
+# Delete old, exited session, so zellij doesn't revive it and we get a fresh session
+zellij list-sessions | grep "$ZELLIJ_SESSION_NAME" | grep EXITED
+greprc=$?
+if [[ $greprc -eq 0 ]]; then
+    zellij delete-session "$ZELLIJ_SESSION_NAME"
+fi
+
+# Reattach dispatched sessions, since those were probably dispatched on purpose for e.g.
+# unsaved changes. Otherwise create fresh session with layout.
+zellij list-sessions | grep "$ZELLIJ_SESSION_NAME"
+greprc=$?
+if [[ $greprc -eq 0 ]]; then
+    zellij attach "$ZELLIJ_SESSION_NAME"
+else
+    export DAY=$DAY
+    zellij -s "$ZELLIJ_SESSION_NAME" -n ../zellij.kdl
+fi

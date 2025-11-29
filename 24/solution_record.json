@@ -10,8 +10,8 @@
         {
             "id": 2,
             "title": "Day 2: Red-Nosed Reports",
-            "part_one": 8.89398992061615e-1,
-            "part_two": 1.1470390558242798e0
+            "part_one": 3.3615100383758545e-1,
+            "part_two": 4.125100076198578e-1
         },
         {
             "id": 3,
@@ -46,20 +46,20 @@
         {
             "id": 8,
             "title": "Day 8: Resonant Collinearity",
-            "part_one": 6.710190176963806e-1,
-            "part_two": 7.704229950904846e-1
+            "part_one": 4.3487998843193054e-1,
+            "part_two": 5.4094398021698e-1
         },
         {
             "id": 9,
             "title": "Day 9: Disk Fragmenter",
-            "part_one": 1.5094099938869476e-1,
-            "part_two": 8.24571533203125e1
+            "part_one": 1.376670002937317e-1,
+            "part_two": 7.110796356201172e1
         },
         {
             "id": 10,
             "title": "Day 10: Hoof It",
-            "part_one": 2.9096201062202454e-1,
-            "part_two": 3.0825498700141907e-1
+            "part_one": 2.7557700872421265e-1,
+            "part_two": 2.656019926071167e-1
         },
         {
             "id": 11,
@@ -83,7 +83,7 @@
             "id": 14,
             "title": "Day 14: Restroom Redoubt",
             "part_one": 1.0139200091362e-1,
-            "part_two": 1.948506622314453e2
+            "part_two": 1.8705711364746094e2
         },
         {
             "id": 15,
@@ -95,13 +95,13 @@
             "id": 16,
             "title": "Day 16: Reindeer Maze",
             "part_one": 1.6157691955566406e1,
-            "part_two": 3.43134765625e1
+            "part_two": 2.7547992706298828e1
         },
         {
             "id": 17,
             "title": "Day 17: Chronospatial Computer",
             "part_one": 5.522000137716532e-3,
-            "part_two": 8.045293426513672e1
+            "part_two": 8.010989379882812e1
         },
         {
             "id": 18,
@@ -118,8 +118,8 @@
         {
             "id": 20,
             "title": "Day 20: Race Condition",
-            "part_one": 2.3986120223999023e0,
-            "part_two": 1.1508495330810547e2
+            "part_one": 2.2468490600585938e0,
+            "part_two": 1.0568516540527344e2
         },
         {
             "id": 21,
@@ -130,19 +130,25 @@
         {
             "id": 22,
             "title": "Day 22: Monkey Market",
-            "part_one": 1.1839256286621094e1,
+            "part_one": 1.076280403137207e1,
             "part_two": 3.468866882324219e2
         },
         {
             "id": 23,
             "title": "Day 23: LAN Party",
             "part_one": 1.1153810024261475e0,
-            "part_two": 4.934203796386719e2
+            "part_two": 4.840755310058594e2
         },
         {
             "id": 24,
             "title": "Day 24: Crossed Wires",
-            "part_one": 3.085319995880127e-1,
+            "part_one": 2.8307199478149414e-1,
+            "part_two": null
+        },
+        {
+            "id": 25,
+            "title": "Day 25: Code Chronicle",
+            "part_one": null,
             "part_two": null
         }
     ]
