@@ -36,30 +36,36 @@ pub fn main() !void {
 
         if (solutions.get(day)) |solution| {
             const time0_one = try time.Instant.now();
-            const value_one = solution.part_one(allocator, input);
+            var value_one = solution.part_one(allocator, input);
+            defer value_one.deinit();
             const time1_one = try time.Instant.now();
             const timed_one: f32 = @floatFromInt(time1_one.since(time0_one));
             const elapsed_ms_one = timed_one / time.ns_per_ms;
-            if (value_one) |value| {
-                try stdout.print("Part 1: {d}, {d:.3} ms\n", .{ value, elapsed_ms_one });
-                try stdout.flush();
+            switch (value_one) {
+                .Empty => {},
+                .Number => |n| try stdout.print("Part 1: {d}, {d:.3} ms\n", .{ n, elapsed_ms_one }),
+                .String => |s| try stdout.print("Part 1: {s}, {d:.3} ms\n", .{ s.bytes, elapsed_ms_one }),
             }
+            try stdout.flush();
             const time0_two = try time.Instant.now();
-            const value_two = solution.part_two(allocator, input);
+            var value_two = solution.part_two(allocator, input);
+            defer value_two.deinit();
             const time1_two = try time.Instant.now();
             const timed_two: f32 = @floatFromInt(time1_two.since(time0_two));
             const elapsed_ms_two = timed_two / time.ns_per_ms;
-            if (value_two) |value| {
-                try stdout.print("Part 2: {d}, {d:.3} ms\n", .{ value, elapsed_ms_two });
-                try stdout.flush();
+            switch (value_two) {
+                .Empty => {},
+                .Number => |n| try stdout.print("Part 2: {d}, {d:.3} ms\n", .{ n, elapsed_ms_two }),
+                .String => |s| try stdout.print("Part 2: {s}, {d:.3} ms\n", .{ s.bytes, elapsed_ms_two }),
             }
+            try stdout.flush();
 
             if (day != 0) {
                 try updateRecord(allocator, ResultRecord{
                     .id = @intCast(day),
                     .title = solution.title(),
-                    .part_one = if (value_one != null) elapsed_ms_one else null,
-                    .part_two = if (value_two != null) elapsed_ms_two else null,
+                    .part_one = if (value_one != .Empty) elapsed_ms_one else null,
+                    .part_two = if (value_two != .Empty) elapsed_ms_two else null,
                 });
             }
         }
