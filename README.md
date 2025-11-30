@@ -12,6 +12,6 @@ some time.
 
 These are the years, where I have solved puzzles and the language used:
 
-* [2023](23) -> Zig (tested stuff out in preparation for 24, not complete yet)
-* [2024](24) -> Zig (post-advent upgraded to 0.14.1)
+* [2023](23) -> Zig 0.13.0 (tested stuff out in preparation for 24, not complete yet)
+* [2024](24) -> Zig 0.14.1 (originally 0.13.0, upgraded afterwards out of curiosity)
 * [2025](25) -> Zig 0.15.2
