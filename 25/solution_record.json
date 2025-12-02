@@ -6,6 +6,12 @@
             "title": "Day 1: Secret Entrance",
             "part_one": 0.11194799840450287,
             "part_two": 0.30222898721694946
+        },
+        {
+            "id": 2,
+            "title": "Day 2: Gift Shop",
+            "part_one": 45.11531448364258,
+            "part_two": 110.03572845458984
         }
     ]
 }
