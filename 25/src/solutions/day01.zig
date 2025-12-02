@@ -48,20 +48,14 @@ pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
         const n: i64 = std.fmt.parseInt(i64, line[1..], 10) catch unreachable;
         result += @intCast(@divFloor(n, 100));
         const old = dial;
-        const d = @mod(n, 100);
-        if (d != 0) {
-            dial += op * @mod(n, 100);
-            // Only accounting for negative, if not starting at 0, since that 0 was
-            // already accounted for
-            if ((old != 0 and dial < 1) or dial > 99) {
-                result += 1;
-            }
+        dial += op * @mod(n, 100);
+        // Only accounting for negative, if not starting at 0, since that 0 was
+        // already accounted for
+        if ((old != 0 and dial < 1) or dial > 99) {
+            result += 1;
         }
         dial = @mod(dial, 100);
     }
-
-    // 6293 too low
-    // 6738 too low
 
     return Solution.Result.number(result);
 }
