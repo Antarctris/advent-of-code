@@ -1,9 +1,17 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 pub const graph = @import("graph.zig");
 pub const grid = @import("grid.zig");
 pub const math = @import("math.zig");
 pub const mem = @import("mem.zig");
+
+pub const testonly = struct {
+    pub fn print(comptime fmt: []const u8, args: anytype) void {
+        if (!builtin.is_test) return;
+        std.debug.print(fmt, args);
+    }
+};
 
 pub fn parseNumbersScalar(allocator: std.mem.Allocator, comptime T: type, base: u8, string: []const u8, delimiter: u8) []T {
     var numbers = std.ArrayList(T).init(allocator);
