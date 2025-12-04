@@ -18,6 +18,12 @@
             "title": "Day 3: Lobby",
             "part_one": 0.06919000297784805,
             "part_two": 0.20873099565505981
+        },
+        {
+            "id": 4,
+            "title": "Day 4: Printing Department",
+            "part_one": 1.4030359983444214,
+            "part_two": 12.286888122558594
         }
     ]
 }
