@@ -24,6 +24,12 @@
             "title": "Day 4: Printing Department",
             "part_one": 1.4030359983444214,
             "part_two": 12.286888122558594
+        },
+        {
+            "id": 5,
+            "title": "Day 5: Cafeteria",
+            "part_one": 0.39584699273109436,
+            "part_two": 0.07817500084638596
         }
     ]
 }
