@@ -36,7 +36,7 @@ pub fn main() !void {
 
         if (solutions.get(day)) |solution| {
             const time0_one = try time.Instant.now();
-            var value_one = solution.part_one(allocator, input);
+            var value_one = try solution.part_one(allocator, input);
             defer value_one.deinit();
             const time1_one = try time.Instant.now();
             const timed_one: f32 = @floatFromInt(time1_one.since(time0_one));
@@ -48,7 +48,7 @@ pub fn main() !void {
             }
             try stdout.flush();
             const time0_two = try time.Instant.now();
-            var value_two = solution.part_two(allocator, input);
+            var value_two = try solution.part_two(allocator, input);
             defer value_two.deinit();
             const time1_two = try time.Instant.now();
             const timed_two: f32 = @floatFromInt(time1_two.since(time0_two));

@@ -15,20 +15,20 @@ pub fn title() []const u8 {
     return "Day XX: Title";
 }
 
-pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
     _ = input;
     return .Empty;
 }
 
-pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
     _ = input;
     return .Empty;
 }
 
 test "part_1.sample_1" {
-    var result = part_one(std.testing.allocator, sample_1);
+    var result = try part_one(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -38,7 +38,7 @@ test "part_1.sample_1" {
 }
 
 test "part_2.sample_1" {
-    var result = part_two(std.testing.allocator, sample_1);
+    var result = try part_two(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,

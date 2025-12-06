@@ -36,18 +36,18 @@ vtable: *const VTable,
 
 pub const VTable = struct {
     title: *const fn () []const u8,
-    part_one: *const fn (allocator: std.mem.Allocator, input: []const u8) Result,
-    part_two: *const fn (allocator: std.mem.Allocator, input: []const u8) Result,
+    part_one: *const fn (allocator: std.mem.Allocator, input: []const u8) anyerror!Result,
+    part_two: *const fn (allocator: std.mem.Allocator, input: []const u8) anyerror!Result,
 
     pub fn init(T: type) *const VTable {
         const table = &struct {
             fn title() []const u8 {
                 return T.title();
             }
-            fn part_one(allocator: std.mem.Allocator, input: []const u8) Result {
+            fn part_one(allocator: std.mem.Allocator, input: []const u8) !Result {
                 return T.part_one(allocator, input);
             }
-            fn part_two(allocator: std.mem.Allocator, input: []const u8) Result {
+            fn part_two(allocator: std.mem.Allocator, input: []const u8) !Result {
                 return T.part_two(allocator, input);
             }
         };
@@ -63,10 +63,10 @@ pub fn title(self: Solution) []const u8 {
     return self.vtable.title();
 }
 
-pub fn part_one(self: Solution, allocator: std.mem.Allocator, input: []const u8) Result {
+pub fn part_one(self: Solution, allocator: std.mem.Allocator, input: []const u8) !Result {
     return self.vtable.part_one(allocator, input);
 }
 
-pub fn part_two(self: Solution, allocator: std.mem.Allocator, input: []const u8) Result {
+pub fn part_two(self: Solution, allocator: std.mem.Allocator, input: []const u8) !Result {
     return self.vtable.part_two(allocator, input);
 }
