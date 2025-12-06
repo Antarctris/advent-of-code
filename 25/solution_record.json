@@ -30,6 +30,12 @@
             "title": "Day 5: Cafeteria",
             "part_one": 0.39584699273109436,
             "part_two": 0.07817500084638596
+        },
+        {
+            "id": 6,
+            "title": "Day 6: Trash Compactor",
+            "part_one": 0.13968700170516968,
+            "part_two": 0.12991799414157867
         }
     ]
 }
