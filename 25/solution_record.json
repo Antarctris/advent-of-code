@@ -36,6 +36,12 @@
             "title": "Day 6: Trash Compactor",
             "part_one": 0.13968700170516968,
             "part_two": 0.12991799414157867
+        },
+        {
+            "id": 7,
+            "title": "Day 7: Laboratories",
+            "part_one": 0.10877499729394913,
+            "part_two": 0.3911080062389374
         }
     ]
 }
