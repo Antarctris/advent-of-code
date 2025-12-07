@@ -16,8 +16,8 @@ pub fn title() []const u8 {
     return "Day 4: Printing Department";
 }
 
-pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
-    var paperrolls = grid.ByteGrid.parse(allocator, input);
+pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
+    var paperrolls = try grid.ByteGrid.parse(allocator, input);
     defer paperrolls.deinit();
 
     var accessible_rolls: u64 = 0;
@@ -42,8 +42,8 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
     return Solution.Result.number(accessible_rolls);
 }
 
-pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
-    var paperrolls = grid.ByteGrid.parse(allocator, input);
+pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
+    var paperrolls = try grid.ByteGrid.parse(allocator, input);
     defer paperrolls.deinit();
 
     var removed_rolls: u64 = 0;
@@ -74,7 +74,7 @@ pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
 }
 
 test "part_1.sample_1" {
-    var result = part_one(std.testing.allocator, sample_1);
+    var result = try part_one(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -84,7 +84,7 @@ test "part_1.sample_1" {
 }
 
 test "part_2.sample_1" {
-    var result = part_two(std.testing.allocator, sample_1);
+    var result = try part_two(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,

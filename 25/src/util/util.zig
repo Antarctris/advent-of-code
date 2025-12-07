@@ -13,26 +13,26 @@ pub const testonly = struct {
     }
 };
 
-pub fn parseNumbersScalar(allocator: std.mem.Allocator, comptime T: type, base: u8, string: []const u8, delimiter: u8) []T {
+pub fn parseNumbersScalar(allocator: std.mem.Allocator, comptime T: type, base: u8, string: []const u8, delimiter: u8) ![]T {
     var numbers = std.ArrayList(T).init(allocator);
     defer numbers.deinit();
     var iterator = std.mem.tokenizeScalar(u8, string, delimiter);
     while (iterator.next()) |num_str| {
-        const number = std.fmt.parseInt(T, num_str, base) catch unreachable;
-        numbers.append(number) catch unreachable;
+        const number = try std.fmt.parseInt(T, num_str, base);
+        try numbers.append(number);
     }
-    return allocator.dupe(T, numbers.items) catch unreachable;
+    return try allocator.dupe(T, numbers.items);
 }
 
-pub fn parseNumbers(allocator: std.mem.Allocator, comptime T: type, string: []const u8, base: u8) []T {
+pub fn parseNumbers(allocator: std.mem.Allocator, comptime T: type, string: []const u8, base: u8) ![]T {
     var numbers = std.ArrayList(T).init(allocator);
     defer numbers.deinit();
     var iterator = std.mem.tokenizeScalar(u8, string, ' ');
     while (iterator.next()) |num_str| {
-        const number = std.fmt.parseInt(T, num_str, base) catch unreachable;
-        numbers.append(number) catch unreachable;
+        const number = try std.fmt.parseInt(T, num_str, base);
+        try numbers.append(number);
     }
-    return allocator.dupe(T, numbers.items) catch unreachable;
+    return try allocator.dupe(T, numbers.items);
 }
 
 pub fn isDigit(char: u8) bool {

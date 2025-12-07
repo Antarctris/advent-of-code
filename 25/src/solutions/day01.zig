@@ -15,7 +15,7 @@ pub fn title() []const u8 {
     return "Day 1: Secret Entrance";
 }
 
-pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
 
     var result: u64 = 0;
@@ -25,7 +25,7 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
     while (line_iterator.next()) |line| {
         if (line.len == 0) continue;
         const op: i64 = if (line[0] == 'R') 1 else -1;
-        const n: i64 = std.fmt.parseInt(i64, line[1..], 10) catch unreachable;
+        const n: i64 = try std.fmt.parseInt(i64, line[1..], 10);
         dial += op * n;
         dial = @mod(dial, 100);
         if (dial == 0) {
@@ -36,7 +36,7 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
     return Solution.Result.number(result);
 }
 
-pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
     var result: u64 = 0;
     var dial: i64 = 50;
@@ -45,7 +45,7 @@ pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
     while (line_iterator.next()) |line| {
         if (line.len == 0) continue;
         const op: i64 = if (line[0] == 'R') 1 else -1;
-        const n: i64 = std.fmt.parseInt(i64, line[1..], 10) catch unreachable;
+        const n: i64 = try std.fmt.parseInt(i64, line[1..], 10);
         result += @intCast(@divFloor(n, 100));
         const old = dial;
         dial += op * @mod(n, 100);
@@ -61,7 +61,7 @@ pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
 }
 
 test "part_1.sample_1" {
-    var result = part_one(std.testing.allocator, sample_1);
+    var result = try part_one(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -71,7 +71,7 @@ test "part_1.sample_1" {
 }
 
 test "part_2.sample_1" {
-    var result = part_two(std.testing.allocator, sample_1);
+    var result = try part_two(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -81,7 +81,7 @@ test "part_2.sample_1" {
 }
 
 test "part_2.sample_2" {
-    var result = part_two(std.testing.allocator, sample_2);
+    var result = try part_two(std.testing.allocator, sample_2);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,

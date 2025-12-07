@@ -15,7 +15,7 @@ pub fn title() []const u8 {
     return "Day 3: Lobby";
 }
 
-pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
 
     var result: u64 = 0;
@@ -38,14 +38,14 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
     return Solution.Result.number(result);
 }
 
-pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
 
     var result: u64 = 0;
     var line_iterator = mem.tokenizeScalar(u8, input, '\n');
     while (line_iterator.next()) |line| {
         if (line.len == 0) continue;
-        result += findLargestNumber(12, line);
+        result += try findLargestNumber(12, line);
     }
 
     return Solution.Result.number(result);
@@ -53,7 +53,7 @@ pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
 
 // I could have used this to replace my original solution of part 1, but I
 // think this would be slower for part 1, therefore I left it as is.
-fn findLargestNumber(comptime num_of_digits: usize, num_str: []const u8) u64 {
+fn findLargestNumber(comptime num_of_digits: usize, num_str: []const u8) !u64 {
     var num_idx: [num_of_digits]usize = undefined;
     var num_val: [num_of_digits]u8 = undefined;
     num_idx[0] = findTopDigit(num_str[0 .. num_str.len - (num_of_digits - 1)]);
@@ -65,7 +65,7 @@ fn findLargestNumber(comptime num_of_digits: usize, num_str: []const u8) u64 {
     for (0..12) |i| {
         num_val[i] = num_str[num_idx[i]];
     }
-    return std.fmt.parseInt(u64, &num_val, 10) catch unreachable;
+    return try std.fmt.parseInt(u64, &num_val, 10);
 }
 
 fn findTopDigit(number_str: []const u8) usize {
@@ -79,7 +79,7 @@ fn findTopDigit(number_str: []const u8) usize {
 }
 
 test "part_1.sample_1" {
-    var result = part_one(std.testing.allocator, sample_1);
+    var result = try part_one(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -89,7 +89,7 @@ test "part_1.sample_1" {
 }
 
 test "part_2.sample_1" {
-    var result = part_two(std.testing.allocator, sample_1);
+    var result = try part_two(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,

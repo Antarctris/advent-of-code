@@ -15,7 +15,7 @@ pub fn title() []const u8 {
     return "Day 2: Gift Shop";
 }
 
-pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
 
     var result: u64 = 0;
@@ -24,11 +24,11 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
     while (range_iterator.next()) |range_str| {
         if (range_str.len == 0) continue;
         var range_split = mem.splitScalar(u8, range_str, '-');
-        const small: usize = std.fmt.parseInt(u64, range_split.next() orelse unreachable, 10) catch unreachable;
-        const large: usize = std.fmt.parseInt(u64, range_split.next() orelse unreachable, 10) catch unreachable;
+        const small: usize = try std.fmt.parseInt(u64, range_split.next() orelse unreachable, 10);
+        const large: usize = try std.fmt.parseInt(u64, range_split.next() orelse unreachable, 10);
         for (small..large + 1) |n| {
             // Old version
-            //const n_str = std.fmt.bufPrint(&buffer, "{d}", .{n}) catch unreachable;
+            //const n_str = try std.fmt.bufPrint(&buffer, "{d}", .{n});
             //if (@mod(n_str.len, 2) != 0) continue;
             //const h = @divTrunc(n_str.len, 2);
             //if (mem.eql(u8, n_str[0..h], n_str[h..])) {
@@ -46,7 +46,7 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
     return Solution.Result.number(result);
 }
 
-pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
 
     var result: u64 = 0;
@@ -55,8 +55,8 @@ pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
     while (range_iterator.next()) |range_str| {
         if (range_str.len == 0) continue;
         var range_split = mem.splitScalar(u8, range_str, '-');
-        const small: usize = std.fmt.parseInt(u64, range_split.next() orelse unreachable, 10) catch unreachable;
-        const large: usize = std.fmt.parseInt(u64, range_split.next() orelse unreachable, 10) catch unreachable;
+        const small: usize = try std.fmt.parseInt(u64, range_split.next() orelse unreachable, 10);
+        const large: usize = try std.fmt.parseInt(u64, range_split.next() orelse unreachable, 10);
         for (small..large + 1) |n| {
             if (containsRepeatingPatternNum(@intCast(n))) {
                 result += n;
@@ -109,7 +109,7 @@ fn containsRepeatingPatternStr(s: []const u8) bool {
 }
 
 test "part_1.sample_1" {
-    var result = part_one(std.testing.allocator, sample_1);
+    var result = try part_one(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -119,7 +119,7 @@ test "part_1.sample_1" {
 }
 
 test "part_2.sample_1" {
-    var result = part_two(std.testing.allocator, sample_1);
+    var result = try part_two(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -129,7 +129,7 @@ test "part_2.sample_1" {
 }
 
 test "part_2.sample_2" {
-    var result = part_two(std.testing.allocator, sample_2);
+    var result = try part_two(std.testing.allocator, sample_2);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,

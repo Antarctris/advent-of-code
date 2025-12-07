@@ -17,7 +17,7 @@ pub fn title() []const u8 {
 }
 
 pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
-    var tachyon_manifold_diagram = grid.ByteGrid.parse(allocator, input);
+    var tachyon_manifold_diagram = try grid.ByteGrid.parse(allocator, input);
     defer tachyon_manifold_diagram.deinit();
 
     var tachyon_splits: u64 = 0;
@@ -48,7 +48,7 @@ pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
 }
 
 pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
-    var tachyon_manifold_diagram = grid.ByteGrid.parse(allocator, input);
+    var tachyon_manifold_diagram = try grid.ByteGrid.parse(allocator, input);
     defer tachyon_manifold_diagram.deinit();
 
     var timeline_memo = std.AutoHashMap(usize, u64).init(allocator);

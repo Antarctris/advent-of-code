@@ -87,8 +87,8 @@ pub const ByteGrid = struct {
     height: u64,
     bytes: []u8,
 
-    pub fn init(allocator: Allocator, width: u64, height: u64, initial: ?u8) ByteGrid {
-        var bytes = allocator.alloc(u8, width * height) catch unreachable;
+    pub fn init(allocator: Allocator, width: u64, height: u64, initial: ?u8) !ByteGrid {
+        var bytes = try allocator.alloc(u8, width * height);
         if (initial) |value| {
             for (0..bytes.len) |index| {
                 bytes[index] = value;
@@ -102,12 +102,12 @@ pub const ByteGrid = struct {
         };
     }
 
-    pub fn parse(allocator: Allocator, input: []const u8) ByteGrid {
+    pub fn parse(allocator: Allocator, input: []const u8) !ByteGrid {
         // Files usually end with a final \n and therefore an additional empty line, meaning every
         // meaningful line is terminated with \n and this can be used to count meaningful lines.
         const height = std.mem.count(u8, input, "\n") + @intFromBool(input[input.len - 1] != '\n');
         const width = std.mem.indexOf(u8, input, "\n").?;
-        var bytes = allocator.alloc(u8, height * width) catch unreachable;
+        var bytes = try allocator.alloc(u8, height * width);
 
         var line_iterator = std.mem.splitScalar(u8, input, '\n');
         var index: usize = 0;
@@ -124,8 +124,8 @@ pub const ByteGrid = struct {
         };
     }
 
-    pub fn columnsToRows(self: ByteGrid) ByteGrid {
-        var bytes = self.allocator.alloc(u8, self.height * self.width) catch unreachable;
+    pub fn columnsToRows(self: ByteGrid) !ByteGrid {
+        var bytes = try self.allocator.alloc(u8, self.height * self.width);
         for (0..self.height) |y| {
             for (0..self.width) |x| {
                 bytes[x * self.height + y] = self.bytes[self.byteIndexOf(x, y)];
@@ -171,15 +171,15 @@ pub const ByteGrid = struct {
         return Vec2{ .x = @intCast(@max(d.x, 0) * self.width), .y = @intCast(@max(d.y, 0) * self.height) };
     }
 
-    pub fn scalars(self: ByteGrid, allocator: Allocator) []u8 {
+    pub fn scalars(self: ByteGrid, allocator: Allocator) ![]u8 {
         var elements = std.AutoArrayHashMap(u8, void).init(self.allocator);
         defer elements.deinit();
 
         for (self.bytes) |b| {
-            elements.put(b, {}) catch unreachable;
+            try elements.put(b, {});
         }
 
-        return allocator.dupe(u8, elements.keys()) catch unreachable;
+        return try allocator.dupe(u8, elements.keys());
     }
 
     pub fn locationOf(self: ByteGrid, needle: []const u8) ?Vec2 {
@@ -196,7 +196,7 @@ pub const ByteGrid = struct {
         return self.locationOf(&.{scalar});
     }
 
-    pub fn locationsOf(self: ByteGrid, allocator: Allocator, needle: []const u8) []Vec2 {
+    pub fn locationsOf(self: ByteGrid, allocator: Allocator, needle: []const u8) ![]Vec2 {
         var points = std.ArrayList(Vec2).init(self.allocator);
         defer points.deinit();
         var y: u64 = 0;
@@ -205,24 +205,24 @@ pub const ByteGrid = struct {
             while (x <= self.width - needle.len) : (x += 1) {
                 const index = self.byteIndexOf(x, y);
                 if (std.mem.eql(u8, self.bytes[index .. index + needle.len], needle)) {
-                    points.append(Vec2{ .x = @intCast(x), .y = @intCast(y) }) catch unreachable;
+                    try points.append(Vec2{ .x = @intCast(x), .y = @intCast(y) });
                 }
             }
         }
-        return allocator.dupe(Vec2, points.items) catch unreachable;
+        return try allocator.dupe(Vec2, points.items);
     }
 
-    pub fn locationsOfScalar(self: ByteGrid, allocator: Allocator, scalar: u8) []Vec2 {
-        return self.locationsOf(allocator, &.{scalar});
+    pub fn locationsOfScalar(self: ByteGrid, allocator: Allocator, scalar: u8) ![]Vec2 {
+        return try self.locationsOf(allocator, &.{scalar});
     }
 
-    pub fn neighborsOfRect(self: ByteGrid, allocator: Allocator, a: Vec2, b: Vec2) []Vec2 {
+    pub fn neighborsOfRect(self: ByteGrid, allocator: Allocator, a: Vec2, b: Vec2) ![]Vec2 {
         const nw = Vec2{ .x = @min(a.x, b.x) - 1, .y = @min(a.y, b.y) - 1 };
         const se = Vec2{ .x = @max(a.x, b.x) + 1, .y = @max(a.y, b.y) + 1 };
-        return self.borderOfRect(allocator, nw, se);
+        return try self.borderOfRect(allocator, nw, se);
     }
 
-    pub fn borderOfRect(self: ByteGrid, allocator: Allocator, a: Vec2, b: Vec2) []Vec2 {
+    pub fn borderOfRect(self: ByteGrid, allocator: Allocator, a: Vec2, b: Vec2) ![]Vec2 {
         var locations = std.ArrayList(Vec2).init(self.allocator);
         defer locations.deinit();
         const nw = Vec2{ .x = @min(a.x, b.x), .y = @min(a.y, b.y) };
@@ -236,29 +236,29 @@ pub const ByteGrid = struct {
         while (x < width) : (x += 1) {
             const vec = Vec2{ .x = nw.x + x, .y = nw.y + y };
             if (self.isInBounds(vec)) {
-                locations.append(vec) catch unreachable;
+                try locations.append(vec);
             }
         }
         while (y < height) : (y += 1) {
             const vec = Vec2{ .x = nw.x + x, .y = nw.y + y };
             if (self.isInBounds(vec)) {
-                locations.append(vec) catch unreachable;
+                try locations.append(vec);
             }
         }
         while (x > 0) : (x -= 1) {
             const vec = Vec2{ .x = nw.x + x, .y = nw.y + y };
             if (self.isInBounds(vec)) {
-                locations.append(vec) catch unreachable;
+                try locations.append(vec);
             }
         }
         while (y > 0) : (y -= 1) {
             const vec = Vec2{ .x = nw.x + x, .y = nw.y + y };
             if (self.isInBounds(vec)) {
-                locations.append(vec) catch unreachable;
+                try locations.append(vec);
             }
         }
 
-        return allocator.dupe(Vec2, locations.items) catch unreachable;
+        return try allocator.dupe(Vec2, locations.items);
     }
 
     pub fn count(self: ByteGrid, needle: []const u8) u64 {

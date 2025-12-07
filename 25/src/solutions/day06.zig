@@ -15,7 +15,7 @@ pub fn title() []const u8 {
     return "Day 6: Trash Compactor";
 }
 
-pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
     _ = allocator;
     var line_iterator = std.mem.tokenizeScalar(u8, input, '\n');
     var col_iterator_array: [5]std.mem.TokenIterator(u8, .scalar) = undefined;
@@ -29,10 +29,10 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
 
     var sum: u64 = 0;
     while (col_iterators[0].next()) |n_str| {
-        var n: u64 = std.fmt.parseInt(u64, n_str, 10) catch unreachable;
+        var n: u64 = try std.fmt.parseInt(u64, n_str, 10);
         const op: u8 = (col_iterators[col_iterators.len - 1].next() orelse unreachable)[0];
         for (1..col_iterators.len - 1) |i| {
-            const c = std.fmt.parseInt(u64, col_iterators[i].next() orelse unreachable, 10) catch unreachable;
+            const c = try std.fmt.parseInt(u64, col_iterators[i].next() orelse unreachable, 10);
             n = if (op == '+') (n + c) else (n * c);
         }
         sum += n;
@@ -41,10 +41,10 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
     return Solution.Result.number(sum);
 }
 
-pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
-    var grid0 = util.grid.ByteGrid.parse(allocator, input);
+pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
+    var grid0 = try util.grid.ByteGrid.parse(allocator, input);
     defer grid0.deinit();
-    var gridT = grid0.columnsToRows();
+    var gridT = try grid0.columnsToRows();
     defer gridT.deinit();
 
     const w = gridT.width - 1;
@@ -60,9 +60,9 @@ pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
         }
         if (op == 0) {
             op = row[w];
-            current = std.fmt.parseInt(u64, std.mem.trim(u8, row[0..w], " "), 10) catch unreachable;
+            current = try std.fmt.parseInt(u64, std.mem.trim(u8, row[0..w], " "), 10);
         } else {
-            const n = std.fmt.parseInt(u64, std.mem.trim(u8, row[0..w], " "), 10) catch unreachable;
+            const n = try std.fmt.parseInt(u64, std.mem.trim(u8, row[0..w], " "), 10);
             current = if (op == '+') (current + n) else (current * n);
         }
     }
@@ -79,7 +79,7 @@ pub fn isWhitespace(str: []const u8) bool {
 }
 
 test "part_1.sample_1" {
-    var result = part_one(std.testing.allocator, sample_1);
+    var result = try part_one(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -89,7 +89,7 @@ test "part_1.sample_1" {
 }
 
 test "part_2.sample_1" {
-    var result = part_two(std.testing.allocator, sample_1);
+    var result = try part_two(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,

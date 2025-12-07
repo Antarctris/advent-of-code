@@ -15,24 +15,24 @@ pub fn title() []const u8 {
     return "Day 5: Cafeteria";
 }
 
-pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_one(allocator: Allocator, input: []const u8) !Solution.Result {
     var line_iterator = mem.splitScalar(u8, input, '\n');
 
-    var ranges = std.ArrayList(Range).initCapacity(allocator, 1000) catch unreachable;
+    var ranges = try std.ArrayList(Range).initCapacity(allocator, 1000);
     defer ranges.deinit(allocator);
     while (line_iterator.next()) |line| {
         if (line.len == 0) break;
         var line_split = mem.splitScalar(u8, line, '-');
         ranges.append(allocator, .{
-            .a = std.fmt.parseInt(u64, line_split.next() orelse unreachable, 10) catch unreachable,
-            .b = std.fmt.parseInt(u64, line_split.next() orelse unreachable, 10) catch unreachable,
+            .a = try std.fmt.parseInt(u64, line_split.next() orelse unreachable, 10),
+            .b = try std.fmt.parseInt(u64, line_split.next() orelse unreachable, 10),
         }) catch unreachable;
     }
 
     var fresh_ids: u64 = 0;
     while (line_iterator.next()) |line| {
         if (line.len == 0) continue;
-        const n = std.fmt.parseInt(u64, line, 10) catch unreachable;
+        const n = try std.fmt.parseInt(u64, line, 10);
 
         for (ranges.items) |range| {
             if (range.contains(n)) {
@@ -44,22 +44,22 @@ pub fn part_one(allocator: Allocator, input: []const u8) Solution.Result {
     return Solution.Result.number(fresh_ids);
 }
 
-pub fn part_two(allocator: Allocator, input: []const u8) Solution.Result {
+pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
     var line_iterator = mem.splitScalar(u8, input, '\n');
 
-    var ranges = std.ArrayList(Range).initCapacity(allocator, 200) catch unreachable;
+    var ranges = try std.ArrayList(Range).initCapacity(allocator, 200);
     defer ranges.deinit(allocator);
     while (line_iterator.next()) |line| {
         if (line.len == 0) break;
         var line_split = mem.splitScalar(u8, line, '-');
         var current = Range{
-            .a = std.fmt.parseInt(u64, line_split.next() orelse unreachable, 10) catch unreachable,
-            .b = std.fmt.parseInt(u64, line_split.next() orelse unreachable, 10) catch unreachable,
+            .a = try std.fmt.parseInt(u64, line_split.next() orelse unreachable, 10),
+            .b = try std.fmt.parseInt(u64, line_split.next() orelse unreachable, 10),
         };
         while (current.intersectsAny(ranges.items)) |index| {
             current = current.merge(ranges.swapRemove(index));
         }
-        ranges.append(allocator, current) catch unreachable;
+        try ranges.append(allocator, current);
     }
 
     var fresh_ids: u64 = 0;
@@ -104,7 +104,7 @@ const Range = struct {
 };
 
 test "part_1.sample_1" {
-    var result = part_one(std.testing.allocator, sample_1);
+    var result = try part_one(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
@@ -114,7 +114,7 @@ test "part_1.sample_1" {
 }
 
 test "part_2.sample_1" {
-    var result = part_two(std.testing.allocator, sample_1);
+    var result = try part_two(std.testing.allocator, sample_1);
     defer result.deinit();
     switch (result) {
         .Empty => return error.SkipZigTest,
