@@ -42,6 +42,12 @@
             "title": "Day 7: Laboratories",
             "part_one": 0.10877499729394913,
             "part_two": 0.3911080062389374
+        },
+        {
+            "id": 8,
+            "title": "Day 8: Playground",
+            "part_one": 18.014915466308594,
+            "part_two": 40.23237991333008
         }
     ]
 }
