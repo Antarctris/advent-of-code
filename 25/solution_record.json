@@ -48,6 +48,12 @@
             "title": "Day 8: Playground",
             "part_one": 18.014915466308594,
             "part_two": 40.23237991333008
+        },
+        {
+            "id": 9,
+            "title": "Day 9: Movie Theater",
+            "part_one": 1.28227698802948,
+            "part_two": 113251.140625
         }
     ]
 }

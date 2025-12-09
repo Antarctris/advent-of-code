@@ -8,3 +8,4 @@
 | [Day 6: Trash Compactor](src/solutions/day06.zig)             |  ⭐⭐ |      0.140 |      0.130 |
 | [Day 7: Laboratories](src/solutions/day07.zig)                |  ⭐⭐ |      0.109 |      0.391 |
 | [Day 8: Playground](src/solutions/day08.zig)                  |  ⭐⭐ |     18.015 |     40.232 |
+| [Day 9: Movie Theater](src/solutions/day09.zig)               |  ⭐⭐ |      1.282 | 113251.140 |
