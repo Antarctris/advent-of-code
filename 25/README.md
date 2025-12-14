@@ -11,3 +11,4 @@
 | [Day 9: Movie Theater](src/solutions/day09.zig)               |  ⭐⭐ |      1.282 | 113251.140 |
 | [Day 10: Factory](src/solutions/day10.zig)                    |  ⭐⭐ |      7.980 |  13698.555 |
 | [Day 11: Reactor](src/solutions/day11.zig)                    |  ⭐⭐ |      0.113 |      0.395 |
+| [Day 12: Christmas Tree Farm](src/solutions/day12.zig)        |  ⭐⭐ |      0.189 |          - |

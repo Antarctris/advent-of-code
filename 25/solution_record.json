@@ -66,7 +66,12 @@
             "title": "Day 11: Reactor",
             "part_one": 0.11266499757766724,
             "part_two": 0.39547601342201233
+        },
+        {
+            "id": 12,
+            "title": "Day 12: Christmas Tree Farm",
+            "part_one": 0.18927399814128876,
+            "part_two": null
         }
     ]
-
 }

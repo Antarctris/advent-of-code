@@ -79,6 +79,7 @@ pub fn main() !void {
     }
 }
 
+const DAYS = 12;
 const record_path = "solution_record.json";
 const report_path = "README.md";
 fn updateRecord(allocator: Allocator, record: ResultRecord) !void {
@@ -121,16 +122,19 @@ fn updateRecord(allocator: Allocator, record: ResultRecord) !void {
         _ = try report_file.writeAll(report_header);
 
         var record_index: usize = 0;
-        for (1..26) |report_index| {
+        var stars: usize = 0;
+        for (1..1 + DAYS) |report_index| {
             if (record_index < new_record.results.len and new_record.results[record_index].id == report_index) {
                 const rec = new_record.results[record_index];
                 const day_title: []u8 = try std.fmt.allocPrint(allocator, "[{s}](src/solutions/day{d:0>2}.zig)", .{ rec.title, rec.id });
                 defer allocator.free(day_title);
 
                 const star_one = if (rec.part_one != null) "⭐" else "  ";
+                stars += if (rec.part_one != null) 1 else 0;
                 const time_one = if (rec.part_one) |ms| try std.fmt.allocPrint(allocator, "{d:.3}", .{ms}) else try std.fmt.allocPrint(allocator, "-", .{});
 
-                const star_two = if (rec.part_two != null) "⭐" else "  ";
+                const star_two = if (rec.part_two != null or stars == DAYS * 2 - 1) "⭐" else "  ";
+                stars += if (rec.part_two != null) 1 else 0;
                 const time_two = if (rec.part_two) |ms| try std.fmt.allocPrint(allocator, "{d:.3}", .{ms}) else try std.fmt.allocPrint(allocator, "-", .{});
 
                 const line = try std.fmt.allocPrint(
