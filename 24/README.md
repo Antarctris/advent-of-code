@@ -23,5 +23,5 @@
 | [Day 21: Keypad Conundrum](src/solutions/day21.zig)           |  ⭐⭐ |      0.016 |      0.020 |
 | [Day 22: Monkey Market](src/solutions/day22.zig)              |  ⭐⭐ |     10.763 |    346.887 |
 | [Day 23: LAN Party](src/solutions/day23.zig)                  |  ⭐⭐ |      1.115 |    484.076 |
-| [Day 24: Crossed Wires](src/solutions/day24.zig)              |  ⭐   |      0.283 |          - |
+| [Day 24: Crossed Wires](src/solutions/day24.zig)              |  ⭐⭐ |      0.283 |      0.466 |
 | [Day 25: Code Chronicle](src/solutions/day25.zig)             |       |          - |          - |
