@@ -10,3 +10,4 @@
 | [Day 8: Playground](src/solutions/day08.zig)                  |  ⭐⭐ |     18.015 |     40.232 |
 | [Day 9: Movie Theater](src/solutions/day09.zig)               |  ⭐⭐ |      1.282 | 113251.140 |
 | [Day 10: Factory](src/solutions/day10.zig)                    |  ⭐⭐ |      7.980 |  13698.555 |
+| [Day 11: Reactor](src/solutions/day11.zig)                    |  ⭐⭐ |      0.113 |      0.395 |
