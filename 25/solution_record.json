@@ -54,6 +54,12 @@
             "title": "Day 9: Movie Theater",
             "part_one": 1.28227698802948,
             "part_two": 113251.140625
-        }
+        },
+        {
+            "id": 10,
+            "title": "Day 10: Factory",
+            "part_one": 7.980192184448242,
+            "part_two": 13698.5546875
+        },
     ]
 }
