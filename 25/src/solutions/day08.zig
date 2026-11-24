@@ -30,7 +30,7 @@ pub fn part_one_p(allocator: Allocator, input: []const u8, comptime n: usize) !S
 
     var line_iterator = mem.tokenizeScalar(u8, input, '\n');
     while (line_iterator.next()) |line| {
-        const current = try Vec3.fromStringScalar(line, ',');
+        const current = try Vec3Utils.parseStringScalar(line, ',');
         for (coordinates.items) |other| {
             try distances.add(Vec3Distance.from(current, other));
         }
@@ -49,14 +49,14 @@ pub fn part_one_p(allocator: Allocator, input: []const u8, comptime n: usize) !S
         if (distances.removeOrNull()) |shortest| {
             var a_list: ?usize = null;
             for (0..circuits.items.len) |i| {
-                if (shortest.a.isInList(circuits.items[i].items)) {
+                if (contains(circuits.items[i].items, shortest.a)) {
                     a_list = i;
                     break;
                 }
             }
             var b_list: ?usize = null;
             for (0..circuits.items.len) |i| {
-                if (shortest.b.isInList(circuits.items[i].items)) {
+                if (contains(circuits.items[i].items, shortest.b)) {
                     b_list = i;
                     break;
                 }
@@ -102,7 +102,7 @@ pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
 
     var line_iterator = mem.tokenizeScalar(u8, input, '\n');
     while (line_iterator.next()) |line| {
-        const current = try Vec3.fromStringScalar(line, ',');
+        const current = try Vec3Utils.parseStringScalar(line, ',');
         for (coordinates.items) |other| {
             try distances.add(Vec3Distance.from(current, other));
         }
@@ -121,14 +121,14 @@ pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
     while (distances.removeOrNull()) |shortest| {
         var a_list: ?usize = null;
         for (0..circuits.items.len) |i| {
-            if (shortest.a.isInList(circuits.items[i].items)) {
+            if (contains(circuits.items[i].items, shortest.a)) {
                 a_list = i;
                 break;
             }
         }
         var b_list: ?usize = null;
         for (0..circuits.items.len) |i| {
-            if (shortest.b.isInList(circuits.items[i].items)) {
+            if (contains(circuits.items[i].items, shortest.b)) {
                 b_list = i;
                 break;
             }
@@ -155,45 +155,20 @@ pub fn part_two(allocator: Allocator, input: []const u8) !Solution.Result {
         }
     }
 
-    const result: u64 = @intCast(last_link.?.a.x * last_link.?.b.x);
+    const result: u64 = @intFromFloat(last_link.?.a[0] * last_link.?.b[0]);
 
     return Solution.Result.number(result);
 }
 
-const Vec3 = struct {
-    x: i64,
-    y: i64,
-    z: i64,
+const Vec3 = @Vector(3, f64);
+const Vec3Utils = util.math.VectorExtension(Vec3);
 
-    pub fn fromStringScalar(str: []const u8, scalar: u8) !Vec3 {
-        var str_iterator = std.mem.splitScalar(u8, str, scalar);
-        return Vec3{
-            .x = try std.fmt.parseInt(i64, str_iterator.next().?, 10),
-            .y = try std.fmt.parseInt(i64, str_iterator.next().?, 10),
-            .z = try std.fmt.parseInt(i64, str_iterator.next().?, 10),
-        };
+pub fn contains(haystack: []const Vec3, needle: Vec3) bool {
+    for (haystack) |straw| {
+        if (@reduce(.And, straw == needle)) return true;
     }
-
-    pub fn equals(self: Vec3, other: Vec3) bool {
-        return (self.x == other.x and self.y == other.y and self.z == other.z);
-    }
-
-    pub fn isInList(self: Vec3, list: []const Vec3) bool {
-        for (list) |other| {
-            if (self.equals(other)) return true;
-        }
-        return false;
-    }
-
-    pub fn euclideanDistance(self: Vec3, other: Vec3) f64 {
-        const a: f64 = @floatFromInt(self.x - other.x);
-        const b: f64 = @floatFromInt(self.y - other.y);
-        const c: f64 = @floatFromInt(self.z - other.z);
-        const product_sum = a * a + b * b + c * c;
-        return product_sum; // Comparison already works with only this, no need for cbrt
-        //return std.math.cbrt(product_sum);
-    }
-};
+    return false;
+}
 
 const Vec3Distance = struct {
     d: f64,
@@ -202,7 +177,7 @@ const Vec3Distance = struct {
 
     pub fn from(a: Vec3, b: Vec3) Vec3Distance {
         return Vec3Distance{
-            .d = a.euclideanDistance(b),
+            .d = Vec3Utils.euclideanDistance(a, b),
             .a = a,
             .b = b,
         };

@@ -18,73 +18,74 @@ pub fn sumRange(comptime T: type, i: T, n: T) T {
     return (i + n - 1) * (n - i) / 2;
 }
 
-pub fn VectorExtension(T: type) type {
-    return switch (@typeInfo(T)) {
+pub fn VectorExtension(VecT: type) type {
+    return switch (@typeInfo(VecT)) {
         .vector => |v_info| struct {
-            pub const Zero = T{0 ** v_info.len};
+            pub const T = v_info.child;
+            pub const vec_len = v_info.len;
 
-            pub fn parseStringScalar(str: []const u8, scalar: u8) !T {
+            pub const zero: VecT = @splat(0);
+
+            pub fn parseStringScalar(str: []const u8, scalar: u8) !VecT {
                 var str_iterator = std.mem.tokenizeScalar(u8, str, scalar);
-                var v: T = undefined;
+                var v: VecT = undefined;
                 var i: usize = 0;
-                while (str_iterator.next()) |n_str| {
+                while (str_iterator.next()) |n_str| : (i += 1) {
+                    if (i >= v_info.len) return error.TooManyElements;
                     v[i] = switch (@typeInfo(v_info.child)) {
                         .int => try std.fmt.parseInt(v_info.child, n_str, 10),
                         .float => try std.fmt.parseFloat(v_info.child, n_str),
-                        else => @compileError("Vector needs to hold int or float to support parsing!"),
+                        else => @compileError("Vector must hold int or float."),
                     };
-                    i += 1;
-                    if (i == v_info.len) break;
                 }
+                if (i != v_info.len) return error.NotEnoughElements;
                 return v;
             }
 
-            pub fn times(v: T, n: anytype) T {
-                return .{v * @as(T, @splat(n))};
+            pub fn scale(v: VecT, n: anytype) VecT {
+                return v * @as(VecT, @splat(@as(T, n)));
             }
 
-            pub fn inverse(v: T) T {
-                return v.times(-1);
+            pub fn inverse(v: VecT) VecT {
+                const isSigned = switch (@typeInfo(T)) {
+                    .int => |a| a.signedness == .signed,
+                    .float => true,
+                    else => false,
+                };
+                if (!isSigned) @compileError("Vector Type must be signed for inversion.");
+                return -v;
             }
 
-            pub fn dot(a: T, b: T) v_info.child {
+            pub fn dot(a: VecT, b: VecT) v_info.child {
                 return @reduce(.Add, a * b);
             }
 
-            fn u64Cast(n: v_info.child) u64 {
-                return switch (@typeInfo(v_info.child)) {
-                    .int => @intCast(n),
-                    .float => @intFromFloat(n),
+            fn u64Cast(n: anytype) u64 {
+                return switch (@typeInfo(@TypeOf(n))) {
+                    .int, .comptime_int => @intCast(n),
+                    .float, .comptime_float => @intFromFloat(n),
                     .pointer => @intFromPtr(n),
                     else => @compileError("Vector type must be of int, float or pointer!"),
                 };
             }
 
             // Orthogonal only distance, see https://en.wikipedia.org/wiki/Taxicab_geometry
-            pub fn manhattanDistance(a: T, b: T) u64 {
+            pub fn manhattanDistance(a: VecT, b: VecT) u64 {
                 return u64Cast(@reduce(.Add, @abs(b - a)));
             }
 
             // Ortho- and diagonal distance, see https://en.wikipedia.org/wiki/Chebyshev_distance
-            pub fn chebyshevDistance(a: T, b: T) u64 {
+            pub fn chebyshevDistance(a: VecT, b: VecT) u64 {
                 return u64Cast(@reduce(.Max, @abs(b - a)));
             }
 
-            // Euclidean distance (pythagorean), see https://en.wikipedia.org/wiki/Euclidean_distanctarstoa
-            pub fn euclideanDistance(a: T, b: T) f64 {
+            // Euclidean distance (pythagorean), see https://en.wikipedia.org/wiki/Euclidean_distance
+            pub fn euclideanDistance(a: VecT, b: VecT) f64 {
                 const d = b - a;
-                const sum: f64 = @reduce(.Add, vecToFloat(d * d));
-                return switch (v_info.len) {
-                    1 => sum,
-                    2 => @sqrt(sum),
-                    3 => std.math.cbrt(sum),
-                    // Zig doesn't provide a nth root implementation at the moment
-                    // returning the sum at least gives comparable values (eq, lt, gt, ...)
-                    else => sum,
-                };
+                return @sqrt(@reduce(.Add, vecToFloat(d * d)));
             }
 
-            fn vecToFloat(v: T) @Vector(v_info.len, f64) {
+            fn vecToFloat(v: VecT) @Vector(v_info.len, f64) {
                 var result: @Vector(v_info.len, f64) = undefined;
                 inline for (0..v_info.len) |i| {
                     result[i] = switch (@typeInfo(v_info.child)) {
